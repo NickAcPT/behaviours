@@ -13,7 +13,7 @@ interface CanvasAbstraction<ElementType, ColorType> : CanvasElementAbstraction<E
 	 *
 	 * Basically, this is the whole screen rectangle.
 	 */
-	val rectangle: CanvasRectangle
+	val canvasRectangle: CanvasRectangle
 
 	/**
 	 * The elements in the canvas.

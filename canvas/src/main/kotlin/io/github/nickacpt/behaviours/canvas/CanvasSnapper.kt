@@ -26,7 +26,7 @@ class CanvasSnapper<ElementType, ColorType>(private val canvas: Canvas<ElementTy
 
 		return rectangles
 			.asSequence()
-			.flatMap { it.sides() }
+			.flatMap { it.sides(canvas.config.generateMiddleSnapLines) }
 			.groupBy { it.direction }
 			.mapValues { it.value.map { v -> v.value }.toSet() }
 			.toMap()
@@ -48,8 +48,8 @@ class CanvasSnapper<ElementType, ColorType>(private val canvas: Canvas<ElementTy
 	}
 
 	fun snap(mousePosition: CanvasPoint, elementRect: CanvasRectangle, outPoint: CanvasPoint) {
-		val canvasRect = canvas.abstraction.rectangle
-		val sides = elementRect.sides()
+		val canvasRect = canvas.abstraction.canvasRectangle
+		val sides = elementRect.sides(canvas.config.elementsHaveMiddleSnapLines)
 
 		val snappedDirections = EnumSet.noneOf(CanvasLineDirection::class.java)
 		for ((sidePos, direction, side) in sides) {
@@ -58,7 +58,7 @@ class CanvasSnapper<ElementType, ColorType>(private val canvas: Canvas<ElementTy
 			for (line in snapLines) {
 
 				val sideDistToSnapLine = abs(sidePos - line)
-				if (sideDistToSnapLine > canvas.config.snapDistance) continue
+				if (sideDistToSnapLine > (canvas.config.snapDistance)) continue
 
 				var sideOffset = elementRect.getSideValue(direction, side) - elementRect.getSideValue(
 					direction,
@@ -68,7 +68,7 @@ class CanvasSnapper<ElementType, ColorType>(private val canvas: Canvas<ElementTy
 				val mouseOffsetFromCorner = (posProp.get(mousePosition) - posProp.get(elementRect.topLeft))
 				val mouseOffsetDistFromLastSnap = (mouseOffsetFromCorner - (mouseOffsetSnapState[direction] ?: 0f))
 
-				val isUnsnap = abs(mouseOffsetDistFromLastSnap) > canvas.config.mouseExitSnapDistance
+				val isUnsnap = abs(mouseOffsetDistFromLastSnap) > (canvas.config.mouseExitSnapDistance)
 				if (isUnsnap) {
 					sideOffset -= mouseOffsetDistFromLastSnap
 				}

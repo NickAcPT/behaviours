@@ -4,4 +4,5 @@ enum class CanvasAction {
 	NONE,
 	ELEMENT_MOVE,
 	ELEMENT_SELECT,
+	ELEMENT_RESIZE,
 }

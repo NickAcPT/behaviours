@@ -14,4 +14,7 @@ data class CanvasColorConfig<ColorType>(
 
 	var selectionBackground: ColorType? = null,
 	var selectionBorder: ColorType? = null,
+
+	var resizeHandleBackground: ColorType? = null,
+	var resizeHandleBorder: ColorType? = null
 )

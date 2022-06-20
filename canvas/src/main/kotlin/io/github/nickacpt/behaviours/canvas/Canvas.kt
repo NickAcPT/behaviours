@@ -2,145 +2,186 @@ package io.github.nickacpt.behaviours.canvas
 
 import io.github.nickacpt.behaviours.canvas.abstractions.CanvasAbstraction
 import io.github.nickacpt.behaviours.canvas.config.CanvasConfig
+import io.github.nickacpt.behaviours.canvas.config.CanvasResizeHandleVisibility
 import io.github.nickacpt.behaviours.canvas.model.CanvasAction
 import io.github.nickacpt.behaviours.canvas.model.CanvasState
 import io.github.nickacpt.behaviours.canvas.model.geometry.CanvasPoint
 import io.github.nickacpt.behaviours.canvas.model.geometry.CanvasRectangle
 
 class Canvas<ElementType, ColorType>(
-	internal val abstraction: CanvasAbstraction<ElementType, ColorType>,
-	internal val config: CanvasConfig<ColorType>
+    internal val abstraction: CanvasAbstraction<ElementType, ColorType>,
+    internal val config: CanvasConfig<ColorType>
 ) {
-	internal val state = CanvasState<ElementType> { snapper.notifyStateChange(it) }
-	private val renderer = CanvasRenderer(this)
-	private val snapper = CanvasSnapper(this)
+    internal val state = CanvasState<ElementType> {
+        snapper.notifyStateChange(it)
+        resizer.notifyStateChanged()
+    }
+    internal val resizer = CanvasResizer(this)
+    private val renderer = CanvasRenderer(this)
+    private val snapper = CanvasSnapper(this)
 
-	internal val safeZoneRectangle
-		get() = abstraction.rectangle.expand(-config.safeZoneSize)
+    internal val safeZoneRectangle
+        get() = abstraction.canvasRectangle.expand(-config.safeZoneSize)
 
-	fun onRender(mousePosition: CanvasPoint) {
-		renderer.renderBackground(mousePosition)
-		handleAction(mousePosition)
+    fun onRender(mousePosition: CanvasPoint) {
+        renderer.renderBackground(mousePosition)
+        handleAction(mousePosition)
 
-		state.lastRenderMousePosition.apply {
-			x = mousePosition.x
-			y = mousePosition.y
-		}
-	}
+        state.lastRenderMousePosition.apply {
+            x = mousePosition.x
+            y = mousePosition.y
+        }
+    }
 
-	private fun handleAction(mousePosition: CanvasPoint) {
-		if (state.currentAction == CanvasAction.ELEMENT_MOVE) {
-			moveElements(mousePosition)
-		} else if (state.currentAction == CanvasAction.ELEMENT_SELECT) {
-			selectElements(mousePosition)
-		}
-	}
+    private fun handleAction(mousePosition: CanvasPoint) {
+        when (state.currentAction) {
+            CanvasAction.ELEMENT_MOVE -> {
+                moveElements(mousePosition)
+            }
 
-	private fun selectElements(mousePosition: CanvasPoint) {
-		val mouseDownPos = state.mouseDownPosition ?: return
-		val topLeftX = minOf(mouseDownPos.x, mousePosition.x)
-		val topLeftY = minOf(mouseDownPos.y, mousePosition.y)
+            CanvasAction.ELEMENT_SELECT -> {
+                selectElements(mousePosition)
+            }
 
-		val bottomRightX = maxOf(mouseDownPos.x, mousePosition.x)
-		val bottomRightY = maxOf(mouseDownPos.y, mousePosition.y)
+            CanvasAction.ELEMENT_RESIZE -> {
+                resizeElements(mousePosition)
+            }
 
-		val selectionRectangle =
-			CanvasRectangle(CanvasPoint(topLeftX, topLeftY), CanvasPoint(bottomRightX, bottomRightY))
+            CanvasAction.NONE -> {
+                // do nothing
+            }
 
-		config.colors.selectionBackground?.let { abstraction.drawRectangle(selectionRectangle, it, false, 0f) }
-		config.colors.selectionBorder?.let { abstraction.drawRectangle(selectionRectangle, it, true, 1f) }
+            else -> {
+                throw IllegalStateException("Unknown action: ${state.currentAction}")
+            }
+        }
+    }
 
-		for (element in abstraction.elements) {
-			val corners = with(abstraction) { element.rectangle }.corners()
+    private fun selectElements(mousePosition: CanvasPoint) {
+        val mouseDownPos = state.mouseDownPosition ?: return
+        val topLeftX = minOf(mouseDownPos.x, mousePosition.x)
+        val topLeftY = minOf(mouseDownPos.y, mousePosition.y)
 
-			if (corners.any { selectionRectangle.contains(it) }) {
-				state.selectedElements.add(element)
-			} else {
-				// TODO: only restart if not pressing control
-				state.selectedElements.remove(element)
-			}
-		}
-	}
+        val bottomRightX = maxOf(mouseDownPos.x, mousePosition.x)
+        val bottomRightY = maxOf(mouseDownPos.y, mousePosition.y)
 
+        val selectionRectangle =
+            CanvasRectangle(CanvasPoint(topLeftX, topLeftY), CanvasPoint(bottomRightX, bottomRightY))
 
-	private fun moveElements(mousePosition: CanvasPoint) {
-		if (state.selectedElements.isEmpty()) return
-		val delta = mousePosition - state.lastRenderMousePosition
+        config.colors.selectionBackground?.let { abstraction.drawRectangle(selectionRectangle, it, false, 0f) }
+        config.colors.selectionBorder?.let { abstraction.drawRectangle(selectionRectangle, it, true, 1f) }
 
-		state.selectedElements.forEach {
-			with(abstraction) {
-				val elementRect = it.rectangle
-				val canvasRect = safeZoneRectangle
-				val newRectangle = elementRect.copy(
-					topLeft = elementRect.topLeft + delta,
-					bottomRight = elementRect.bottomRight + delta
-				)
-				val point = newRectangle.topLeft
+        for (element in abstraction.elements) {
+            val corners = with(abstraction) { element.rectangle }.corners()
 
-				if (state.selectedElements.size == 1) snapper.snap(mousePosition, newRectangle, point)
+            if (corners.any { selectionRectangle.contains(it) }) {
+                state.selectedElements.add(element)
+            } else {
+                // TODO: only restart if not pressing control
+                state.selectedElements.remove(element)
+            }
+        }
+    }
 
-				point.apply {
-					x = x.coerceIn(canvasRect.left, canvasRect.right - elementRect.width)
-					y = y.coerceIn(canvasRect.top, canvasRect.bottom - elementRect.height)
-				}
+    private fun moveElements(mousePosition: CanvasPoint) {
+        if (state.selectedElements.isEmpty()) return
+        val delta = mousePosition - state.lastRenderMousePosition
 
-				it.moveTo(point)
-			}
-		}
+        state.selectedElements.forEach {
+            with(abstraction) {
+                val elementRect = it.rectangle
+                val canvasRect = safeZoneRectangle
+                val newRectangle = elementRect.copy(
+                    topLeft = elementRect.topLeft + delta,
+                    bottomRight = elementRect.bottomRight + delta
+                )
+                val point = newRectangle.topLeft
 
-		snapper.notifyStateChange(CanvasAction.ELEMENT_MOVE)
-	}
+                if (state.selectedElements.size == 1) snapper.snap(mousePosition, newRectangle, point)
 
-	fun onMouseDown(mousePosition: CanvasPoint) {
-		state.mouseDown = true
-		state.mouseDownPosition = mousePosition.copy()
+                point.apply {
+                    x = x.coerceIn(canvasRect.left, canvasRect.right - elementRect.width)
+                    y = y.coerceIn(canvasRect.top, canvasRect.bottom - elementRect.height)
+                }
 
-		snapper.notifyStateChange(CanvasAction.NONE)
-		computeCurrentAction(mousePosition)
+                println("Moving element: $point")
+                it.moveTo(point)
+            }
+        }
 
-		for (element in abstraction.elements) {
-			val rect = with(abstraction) { element.rectangle }
-			if (rect.contains(mousePosition)) {
+        snapper.notifyStateChange(CanvasAction.ELEMENT_MOVE)
+    }
 
-				val holdingMultiSelectKey = false /* TODO: detect if holding control */
-				if (!holdingMultiSelectKey &&
-					state.currentAction == CanvasAction.ELEMENT_MOVE &&
-					state.selectedElements.isNotEmpty() &&
-					!state.selectedElements.contains(element)
-				) {
-					state.selectedElements.clear()
-				}
+    private fun resizeElements(mousePosition: CanvasPoint) {
+        if (state.selectedElements.size != 1) return
+        val element = state.selectedElements.first()
 
-				state.selectedElements.add(element)
+        resizer.resize(element, mousePosition)
+    }
 
-				return
-			}
-		}
+    fun onMouseDown(mousePosition: CanvasPoint) {
+        state.mouseDown = true
+        state.mouseDownPosition = mousePosition.copy()
 
-		state.selectedElements.clear()
-	}
+        snapper.notifyStateChange(CanvasAction.NONE)
+        computeCurrentAction(mousePosition)
 
-	fun onMouseUp(mousePosition: CanvasPoint) {
-		state.mouseDown = false
-		state.mouseDownPosition = null
+        for (element in abstraction.elements) {
+            val rect = with(abstraction) { element.rectangle }
+            val resizeRect = resizer.takeIf { config.resizeHandleVisibility != CanvasResizeHandleVisibility.NEVER }
+                ?.let { with(it) { element.resizeHandleRectangle } }
+            val isResizing = resizeRect?.contains(mousePosition) == true
 
-		if (state.currentAction == CanvasAction.ELEMENT_MOVE && state.selectedElements.size == 1) {
-			state.selectedElements.clear()
-		}
+            if (rect.contains(mousePosition) || isResizing) {
 
-		computeCurrentAction(mousePosition)
-	}
+                val holdingMultiSelectKey = false /* TODO: detect if holding control */
+                if (isResizing || (!holdingMultiSelectKey &&
+                    state.currentAction == CanvasAction.ELEMENT_MOVE &&
+                    state.selectedElements.isNotEmpty() &&
+                    !state.selectedElements.contains(element)
+)                ) {
+                    state.selectedElements.clear()
+                }
 
-	private fun computeCurrentAction(mousePosition: CanvasPoint) {
-		state.currentAction = CanvasAction.NONE
+                state.selectedElements.add(element)
 
-		val overAnyElement = abstraction.elements.any { with(abstraction) { it.rectangle }.contains(mousePosition) }
-		if (!state.mouseDown) return
+                return
+            }
+        }
 
-		if (overAnyElement) {
-			state.currentAction = CanvasAction.ELEMENT_MOVE
-		} else {
-			state.currentAction = CanvasAction.ELEMENT_SELECT
-		}
-	}
+        state.selectedElements.clear()
+    }
+
+    fun onMouseUp(mousePosition: CanvasPoint) {
+        state.mouseDown = false
+        state.mouseDownPosition = null
+
+        if (state.currentAction == CanvasAction.ELEMENT_MOVE && state.selectedElements.size == 1) {
+            state.selectedElements.clear()
+        }
+
+        computeCurrentAction(mousePosition)
+    }
+
+    private fun computeCurrentAction(mousePosition: CanvasPoint) {
+        state.currentAction = CanvasAction.NONE
+
+        val hoveredElement =
+            abstraction.elements.firstOrNull { with(abstraction) { it.rectangle }.contains(mousePosition) }
+
+        val resizedElement =
+            abstraction.elements.firstOrNull { with(resizer) { it.resizeHandleRectangle }.contains(mousePosition) }
+
+        val overAnyElement = hoveredElement != null
+        if (!state.mouseDown) return
+
+        state.currentAction =
+            if (resizedElement != null && state.selectedElements.size <= 1) {
+                CanvasAction.ELEMENT_RESIZE
+            } else if (overAnyElement) {
+                CanvasAction.ELEMENT_MOVE
+            } else {
+                CanvasAction.ELEMENT_SELECT
+            }
+    }
 }
