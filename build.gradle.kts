@@ -42,11 +42,7 @@ subprojects {
                 from(components["java"])
             }
         }
-    }
-}
 
-tasks {
-    publishing {
         repositories {
             val lightCraftRepoDir = project.findProperty("lightcraft.repo.location")
             if (lightCraftRepoDir != null) {
