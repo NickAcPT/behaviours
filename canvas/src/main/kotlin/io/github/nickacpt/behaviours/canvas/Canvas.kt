@@ -136,10 +136,11 @@ class Canvas<ElementType, ColorType>(
 
                 val holdingMultiSelectKey = false /* TODO: detect if holding control */
                 if (isResizing || (!holdingMultiSelectKey &&
-                    state.currentAction == CanvasAction.ELEMENT_MOVE &&
-                    state.selectedElements.isNotEmpty() &&
-                    !state.selectedElements.contains(element)
-)                ) {
+                            state.currentAction == CanvasAction.ELEMENT_MOVE &&
+                            state.selectedElements.isNotEmpty() &&
+                            !state.selectedElements.contains(element)
+                            )
+                ) {
                     state.selectedElements.clear()
                 }
 
@@ -170,7 +171,8 @@ class Canvas<ElementType, ColorType>(
             abstraction.elements.firstOrNull { with(abstraction) { it.rectangle }.contains(mousePosition) }
 
         val resizedElement =
-            abstraction.elements.firstOrNull { with(resizer) { it.resizeHandleRectangle }.contains(mousePosition) }
+            abstraction.elements.takeIf { config.resizeHandleVisibility != CanvasResizeHandleVisibility.NEVER }
+                ?.firstOrNull { with(resizer) { it.resizeHandleRectangle }.contains(mousePosition) }
 
         val overAnyElement = hoveredElement != null
         if (!state.mouseDown) return
