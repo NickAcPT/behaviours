@@ -104,7 +104,6 @@ class Canvas<ElementType, ColorType>(
                     y = y.coerceIn(canvasRect.top, canvasRect.bottom - elementRect.height)
                 }
 
-                println("Moving element: $point")
                 it.moveTo(point)
             }
         }
