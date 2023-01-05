@@ -1,4 +1,4 @@
 
 rootProject.name = "behaviours"
 
-include("canvas")
+include("canvas", "replay")
