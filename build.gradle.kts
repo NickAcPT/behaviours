@@ -1,9 +1,7 @@
-//import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm") version "1.7.0" apply false
-    //id("com.github.johnrengelman.shadow") version "7.1.2" apply false
     id("org.jetbrains.dokka") version "1.7.0" apply false
     `maven-publish`
 }
@@ -13,7 +11,6 @@ group = "io.github.nickacpt.behaviours"
 subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
     apply(plugin = "java-library")
-    //apply(plugin = "com.github.johnrengelman.shadow")
     apply(plugin = "maven-publish")
     apply(plugin = "org.jetbrains.dokka")
 
@@ -26,23 +23,23 @@ subprojects {
     }
 
     extensions.getByType<org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension>().jvmToolchain {
-        this.languageVersion.set(JavaLanguageVersion.of(8))
+        this.languageVersion.set(JavaLanguageVersion.of(18))
+    }
+
+    this.extensions.getByType(JavaPluginExtension::class.java).apply {
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(18))
+        }
     }
 
     tasks.withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = "18"
         kotlinOptions.javaParameters = true
     }
 
     tasks.withType<AbstractArchiveTask> {
         isPreserveFileTimestamps = false
     }
-
-
-    /*tasks.withType<ShadowJar> {
-        archiveBaseName.set("${project.name}-behaviour")
-        destinationDirectory.set(rootProject.file("build/libs"))
-    }*/
 
     publishing {
         publications {
