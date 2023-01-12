@@ -1,4 +1,4 @@
-package io.github.nickacpt.behaviours.replay.metatada
+package io.github.nickacpt.behaviours.replay
 
 /**
  * A Replay Metadata Key.

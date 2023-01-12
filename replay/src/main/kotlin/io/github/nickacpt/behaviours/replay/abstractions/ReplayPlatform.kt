@@ -2,10 +2,24 @@ package io.github.nickacpt.behaviours.replay.abstractions
 
 /**
  * Represents a platform that can be used to replay a Replay.
- * @param ItemStack The native ItemStack type of the platform.
+ * @param NativeItemStack The native ItemStack type of the platform.
  */
-interface ReplayPlatform<ItemStack> {
+interface ReplayPlatform<NativeItemStack> {
 
-    fun intoPlatformStack(stack: ReplayItemStack): ItemStack
+    /**
+     * Converts a [ReplayItemStack] into a [NativeItemStack].
+     *
+     * @param stack The stack to convert.
+     * @return The converted stack.
+     */
+    fun convertIntoPlatformStack(stack: ReplayItemStack): NativeItemStack
+
+    /**
+     * Converts a [NativeItemStack] into a [ReplayItemStack].
+     *
+     * @param stack The stack to convert.
+     * @return The converted stack.
+     */
+    fun convertIntoReplayStack(stack: NativeItemStack): ReplayItemStack
 
 }
