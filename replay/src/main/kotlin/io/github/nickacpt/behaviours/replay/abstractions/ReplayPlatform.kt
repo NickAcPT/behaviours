@@ -1,7 +1,9 @@
 package io.github.nickacpt.behaviours.replay.abstractions
 
+import io.github.nickacpt.behaviours.replay.Replay
+
 /**
- * Represents a platform that can be used to replay a Replay.
+ * Represents a platform that can be used to play and record a [Replay].
  * @param NativeItemStack The native ItemStack type of the platform.
  */
 interface ReplayPlatform<NativeItemStack> {

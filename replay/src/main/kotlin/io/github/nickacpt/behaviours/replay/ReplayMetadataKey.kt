@@ -1,9 +1,9 @@
 package io.github.nickacpt.behaviours.replay
 
 /**
- * A Replay Metadata Key.
+ * A [Replay] Metadata Key.
  *
- * This key can be used to store extra metadata on the Replay.
+ * This key can be used to store extra metadata on the [Replay].
  *
  * @param T The type of the metadata to be stored.
  * @param key The [String] key of the metadata.

@@ -5,16 +5,16 @@ import io.github.nickacpt.behaviours.replay.abstractions.ReplayPlatform
 /**
  * A class holding the state of a replay system.
  *
- * @param ItemStack The native ItemStack type of the platform.
+ * @param NativeItemStack The native NativeItemStack type of the platform.
  * @param Platform The platform in which the replay system exists.
  */
-class ReplaySystem<ItemStack, Platform : ReplayPlatform<ItemStack>>(internal val platform: ReplayPlatform<ItemStack>) {
+class ReplaySystem<Platform : ReplayPlatform<NativeItemStack>, NativeItemStack>(internal val platform: ReplayPlatform<NativeItemStack>) {
     private val registeredMetadataKeys: MutableMap<String, ReplayMetadataKey<*>> = mutableMapOf()
 
     /**
      * Registers a new metadata key.
      *
-     * This key can be used to store data in a Replay.
+     * This key can be used to store data in a [Replay].
      * @param T The type of the metadata to be stored.
      * @param key The [String] key used to index the data.
      * @param clazz The Java Type of [T].
@@ -26,7 +26,7 @@ class ReplaySystem<ItemStack, Platform : ReplayPlatform<ItemStack>>(internal val
     /**
      * Registers a new metadata key.
      *
-     * This key can be used to store data in a Replay.
+     * This key can be used to store data in a [Replay].
      * @param T The type of the metadata to be stored.
      * @param key The [String] key used to index the data.
      */

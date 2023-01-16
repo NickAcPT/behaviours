@@ -1,11 +1,12 @@
 package io.github.nickacpt.behaviours.replay.abstractions
 
+import io.github.nickacpt.behaviours.replay.Replay
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import java.util.*
 
 /**
- * Represents a viewer on a Replay.
+ * Represents a viewer on a [Replay].
  */
 interface ReplayViewer : ForwardingAudience.Single {
 
