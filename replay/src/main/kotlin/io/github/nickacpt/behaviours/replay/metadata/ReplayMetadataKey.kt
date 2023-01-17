@@ -1,6 +1,7 @@
 package io.github.nickacpt.behaviours.replay.metadata
 
 import io.github.nickacpt.behaviours.replay.Replay
+import net.kyori.adventure.key.Key
 
 /**
  * A [Replay] Metadata Key.
@@ -13,7 +14,7 @@ import io.github.nickacpt.behaviours.replay.Replay
  * @param provider The [ReplayMetadataProvider] for this key.
  */
 data class ReplayMetadataKey<T> internal constructor(
-    val key: String,
+    val key: Key,
     val type: Class<T>,
     val provider: ReplayMetadataProvider<T>? = null
 )

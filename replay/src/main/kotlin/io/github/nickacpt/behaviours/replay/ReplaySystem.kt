@@ -4,18 +4,32 @@ import io.github.nickacpt.behaviours.replay.abstractions.ReplayPlatform
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayViewer
 import io.github.nickacpt.behaviours.replay.metadata.ReplayMetadataKey
 import io.github.nickacpt.behaviours.replay.metadata.ReplayMetadataProvider
+import io.github.nickacpt.behaviours.replay.metadata.def.DefaultMetadataProvider
 import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
+import net.kyori.adventure.key.Key
 
 /**
  * A class holding the state of a replay system.
+ *
+ * @param platform The [ReplayPlatform] to be used.
+ * @param provideDefaultMetadata Whether to provide default metadata.
  *
  * @param NativeItemStack The native NativeItemStack type of the platform.
  * @param Platform The platform in which the replay system exists.
  */
 class ReplaySystem<NativeItemStack, NativeViewer, Platform : ReplayPlatform<NativeItemStack, NativeViewer>>(
-    private val platform: Platform
+    private val platform: Platform,
+    provideDefaultMetadata: Boolean = true
 ) {
-    private val registeredMetadataKeys: MutableMap<String, ReplayMetadataKey<*>> = mutableMapOf()
+    init {
+        if (provideDefaultMetadata) {
+            with(DefaultMetadataProvider) {
+                registerDefaultMetadata()
+            }
+        }
+    }
+
+    private val registeredMetadataKeys: MutableMap<Key, ReplayMetadataKey<*>> = mutableMapOf()
 
     /**
      * Registers a new metadata key.
@@ -26,7 +40,7 @@ class ReplaySystem<NativeItemStack, NativeViewer, Platform : ReplayPlatform<Nati
      * @param clazz The Java Type of [T].
      */
     fun <T> registerMetadataKey(
-        key: String,
+        key: Key,
         clazz: Class<T>,
         provider: ReplayMetadataProvider<T>? = null
     ): ReplayMetadataKey<T> {
@@ -40,7 +54,7 @@ class ReplaySystem<NativeItemStack, NativeViewer, Platform : ReplayPlatform<Nati
      * @param T The type of the metadata to be stored.
      * @param key The [String] key used to index the data.
      */
-    inline fun <reified T> registerMetadataKey(key: String, provider: ReplayMetadataProvider<T>? = null) =
+    inline fun <reified T> registerMetadataKey(key: Key, provider: ReplayMetadataProvider<T>? = null) =
         registerMetadataKey(key, T::class.java, provider)
 
     /**

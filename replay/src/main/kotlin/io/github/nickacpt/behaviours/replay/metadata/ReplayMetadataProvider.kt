@@ -31,5 +31,5 @@ interface ReplayMetadataProvider<T> {
      * @param metadata The value of the metadata to be displayed.
      * @return The display data.
      */
-    fun provideDisplay(metadata: T): Component
+    fun provideDisplay(replay: Replay, metadata: T): Component
 }
