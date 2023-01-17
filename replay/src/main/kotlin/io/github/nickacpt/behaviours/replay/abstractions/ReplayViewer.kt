@@ -16,6 +16,11 @@ interface ReplayViewer : ForwardingAudience.Single {
     val id: UUID
 
     /**
+     * The world the viewer is in.
+     */
+    val world: ReplayWorld?
+
+    /**
      * The audience used to send messages to the viewer.
      */
     val audience: Audience

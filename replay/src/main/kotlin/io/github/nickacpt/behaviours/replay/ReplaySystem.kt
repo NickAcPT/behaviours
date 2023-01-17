@@ -17,10 +17,17 @@ import net.kyori.adventure.key.Key
  * @param NativeItemStack The native NativeItemStack type of the platform.
  * @param Platform The platform in which the replay system exists.
  */
-class ReplaySystem<NativeItemStack, NativeViewer, Platform : ReplayPlatform<NativeItemStack, NativeViewer>>(
+class ReplaySystem<
+        NativeItemStack,
+        NativeViewer,
+        NativeWorld,
+        Platform : ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld>,
+        >(
     private val platform: Platform,
     provideDefaultMetadata: Boolean = true
 ) {
+    private val registeredMetadataKeys: MutableMap<Key, ReplayMetadataKey<*>> = mutableMapOf()
+
     init {
         if (provideDefaultMetadata) {
             with(DefaultMetadataProvider) {
@@ -28,8 +35,6 @@ class ReplaySystem<NativeItemStack, NativeViewer, Platform : ReplayPlatform<Nati
             }
         }
     }
-
-    private val registeredMetadataKeys: MutableMap<Key, ReplayMetadataKey<*>> = mutableMapOf()
 
     /**
      * Registers a new metadata key.
@@ -66,8 +71,9 @@ class ReplaySystem<NativeItemStack, NativeViewer, Platform : ReplayPlatform<Nati
     fun createReplaySession(
         replay: Replay,
         replayViewers: List<ReplayViewer>
-    ): ReplaySession<NativeItemStack, NativeViewer, Platform, ReplaySystem<NativeItemStack, NativeViewer, Platform>> {
-        return ReplaySession(this, replay, replayViewers)
+    ): ReplaySession<NativeItemStack, NativeViewer, NativeWorld, Platform, ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, Platform>> {
+        val replayer = platform.createReplayer(this, replay)
+        return ReplaySession(this, replay, replayViewers, replayer)
     }
 
     /**
@@ -79,8 +85,8 @@ class ReplaySystem<NativeItemStack, NativeViewer, Platform : ReplayPlatform<Nati
     fun createReplaySession(
         replay: Replay,
         replayViewers: List<NativeViewer>
-    ): ReplaySession<NativeItemStack, NativeViewer, Platform, ReplaySystem<NativeItemStack, NativeViewer, Platform>> {
-        return ReplaySession(this, replay, replayViewers.map { platform.convertIntoReplayViewer(it) })
+    ): ReplaySession<NativeItemStack, NativeViewer, NativeWorld, Platform, ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, Platform>> {
+        return createReplaySession(replay, replayViewers.map { platform.convertIntoReplayViewer(it) })
     }
 
 }
