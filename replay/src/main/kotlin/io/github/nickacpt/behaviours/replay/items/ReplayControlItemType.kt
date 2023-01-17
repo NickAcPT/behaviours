@@ -1,9 +1,11 @@
 package io.github.nickacpt.behaviours.replay.items
 
+import io.github.nickacpt.behaviours.replay.abstractions.ReplayItemStack
+
 /**
  * An enum that represents the different types of ReplayControlItems.
  */
-enum class ReplayControlItemType {
+enum class ReplayControlItemType : ReplayItemStack {
     /**
      * The item representing the action of decreasing playback speed.
      */

@@ -1,6 +1,8 @@
 package io.github.nickacpt.behaviours.replay
 
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayPlatform
+import io.github.nickacpt.behaviours.replay.abstractions.ReplayViewer
+import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
 
 /**
  * A class holding the state of a replay system.
@@ -8,7 +10,7 @@ import io.github.nickacpt.behaviours.replay.abstractions.ReplayPlatform
  * @param NativeItemStack The native NativeItemStack type of the platform.
  * @param Platform The platform in which the replay system exists.
  */
-class ReplaySystem<Platform : ReplayPlatform<NativeItemStack>, NativeItemStack>(internal val platform: ReplayPlatform<NativeItemStack>) {
+class ReplaySystem<NativeItemStack, NativeViewer, Platform : ReplayPlatform<NativeItemStack, NativeViewer>>(internal val platform: Platform) {
     private val registeredMetadataKeys: MutableMap<String, ReplayMetadataKey<*>> = mutableMapOf()
 
     /**
@@ -31,4 +33,19 @@ class ReplaySystem<Platform : ReplayPlatform<NativeItemStack>, NativeItemStack>(
      * @param key The [String] key used to index the data.
      */
     inline fun <reified T> registerMetadataKey(key: String) = registerMetadataKey(key, T::class.java)
+
+    fun createReplaySession(
+        replay: Replay,
+        replayViewers: List<ReplayViewer>
+    ): ReplaySession<NativeItemStack, NativeViewer, Platform, ReplaySystem<NativeItemStack, NativeViewer, Platform>> {
+        return ReplaySession(this, replay, replayViewers)
+    }
+
+    fun createReplaySession(
+        replay: Replay,
+        replayViewers: List<NativeViewer>
+    ): ReplaySession<NativeItemStack, NativeViewer, Platform, ReplaySystem<NativeItemStack, NativeViewer, Platform>> {
+        return ReplaySession(this, replay, replayViewers.map { platform.convertIntoReplayViewer(it) })
+    }
+
 }

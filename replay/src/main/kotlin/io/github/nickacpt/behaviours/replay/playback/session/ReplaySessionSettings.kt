@@ -1,4 +1,4 @@
-package io.github.nickacpt.behaviours.replay.replayer
+package io.github.nickacpt.behaviours.replay.playback.session
 
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
