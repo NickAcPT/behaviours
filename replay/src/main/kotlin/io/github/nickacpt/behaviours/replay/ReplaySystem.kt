@@ -83,6 +83,7 @@ class ReplaySystem<
      * @param replay The [Replay] to create the session for.
      * @param replayViewers The [NativeViewer]s to create the session for.
      */
+    @JvmName("createNativeViewerReplaySession")
     fun createReplaySession(
         replay: Replay,
         replayViewers: List<NativeViewer>

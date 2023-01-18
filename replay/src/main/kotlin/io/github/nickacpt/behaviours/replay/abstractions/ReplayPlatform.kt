@@ -1,8 +1,8 @@
 package io.github.nickacpt.behaviours.replay.abstractions
 
-import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.ReplaySystem
-import io.github.nickacpt.behaviours.replay.playback.session.Replayer
+import io.github.nickacpt.behaviours.replay.model.Replay
+import io.github.nickacpt.behaviours.replay.playback.Replayer
 
 /**
  * Represents a platform that can be used to play and record a [Replay].
