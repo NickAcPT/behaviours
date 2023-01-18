@@ -5,6 +5,7 @@ import io.github.nickacpt.behaviours.replay.abstractions.ReplayViewer
 import io.github.nickacpt.behaviours.replay.metadata.ReplayMetadataKey
 import io.github.nickacpt.behaviours.replay.metadata.ReplayMetadataProvider
 import io.github.nickacpt.behaviours.replay.metadata.def.DefaultMetadataProvider
+import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
 import net.kyori.adventure.key.Key
 

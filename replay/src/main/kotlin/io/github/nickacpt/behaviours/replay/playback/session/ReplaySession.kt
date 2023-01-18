@@ -1,9 +1,10 @@
 package io.github.nickacpt.behaviours.replay.playback.session
 
-import io.github.nickacpt.behaviours.replay.Replay
 import io.github.nickacpt.behaviours.replay.ReplaySystem
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayPlatform
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayViewer
+import io.github.nickacpt.behaviours.replay.model.Replay
+import io.github.nickacpt.behaviours.replay.playback.Replayer
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 
@@ -31,7 +32,7 @@ class ReplaySession<
     private val system: System,
     val replay: Replay,
     private val viewers: List<ReplayViewer>,
-    val replayer: Replayer<NativeItemStack, NativeViewer, Platform, System>,
+    val replayer: Replayer<NativeItemStack, NativeViewer, NativeWorld, Platform, System>,
     private val settings: ReplaySessionSettings = ReplaySessionSettings()
 ) : ForwardingAudience {
     /**

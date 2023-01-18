@@ -1,7 +1,6 @@
-package io.github.nickacpt.behaviours.replay
+package io.github.nickacpt.behaviours.replay.model
 
 import io.github.nickacpt.behaviours.replay.metadata.ReplayMetadataKey
-import io.github.nickacpt.behaviours.replay.record.Recordable
 import java.util.*
 
 /**

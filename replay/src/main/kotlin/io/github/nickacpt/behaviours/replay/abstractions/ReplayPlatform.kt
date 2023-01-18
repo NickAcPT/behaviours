@@ -1,6 +1,6 @@
 package io.github.nickacpt.behaviours.replay.abstractions
 
-import io.github.nickacpt.behaviours.replay.Replay
+import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.ReplaySystem
 import io.github.nickacpt.behaviours.replay.playback.session.Replayer
 

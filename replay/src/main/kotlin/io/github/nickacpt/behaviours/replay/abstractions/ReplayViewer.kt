@@ -1,6 +1,6 @@
 package io.github.nickacpt.behaviours.replay.abstractions
 
-import io.github.nickacpt.behaviours.replay.Replay
+import io.github.nickacpt.behaviours.replay.model.Replay
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
 import java.util.*

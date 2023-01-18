@@ -1,6 +1,6 @@
 package io.github.nickacpt.behaviours.replay.metadata.def
 
-import io.github.nickacpt.behaviours.replay.Replay
+import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.metadata.ReplayMetadataProvider
 import net.kyori.adventure.text.Component
 import java.time.Instant
