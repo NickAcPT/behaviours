@@ -10,7 +10,8 @@ import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
 import net.kyori.adventure.key.Key
 
 /**
- * A class holding the state of a replay system.
+ * The [ReplaySystem] class holds the state of a replay system. It provides functionality to create
+ * new [ReplaySession] and register new metadata keys for [Replay] objects.
  *
  * @param platform The [ReplayPlatform] to be used.
  * @param provideDefaultMetadata Whether to provide default metadata.
@@ -39,11 +40,14 @@ class ReplaySystem<
 
     /**
      * Registers a new metadata key.
-     *
      * This key can be used to store data in a [Replay].
+     *
      * @param T The type of the metadata to be stored.
-     * @param key The [String] key used to index the data.
+     * @param key The [Key] used to index the data.
      * @param clazz The Java Type of [T].
+     * @param provider The provider of the metadata.
+     *
+     * @return The registered [ReplayMetadataKey].
      */
     fun <T> registerMetadataKey(
         key: Key,
@@ -55,10 +59,13 @@ class ReplaySystem<
 
     /**
      * Registers a new metadata key.
-     *
      * This key can be used to store data in a [Replay].
+     *
      * @param T The type of the metadata to be stored.
-     * @param key The [String] key used to index the data.
+     * @param key The [Key] used to index the data.
+     * @param provider The provider of the metadata.
+     *
+     * @return The registered [ReplayMetadataKey].
      */
     inline fun <reified T> registerMetadataKey(key: Key, provider: ReplayMetadataProvider<T>? = null) =
         registerMetadataKey(key, T::class.java, provider)
@@ -90,5 +97,4 @@ class ReplaySystem<
     ): ReplaySession<NativeItemStack, NativeViewer, NativeWorld, Platform, ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, Platform>> {
         return createReplaySession(replay, replayViewers.map { platform.convertIntoReplayViewer(it) })
     }
-
 }
