@@ -8,7 +8,7 @@ import io.github.nickacpt.behaviours.replay.playback.Replayer
  * Represents a platform that can be used to play and record a [Replay].
  * @param NativeItemStack The native ItemStack type of the platform.
  */
-interface ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld> {
+interface ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld, NativeEntity> {
 
     /* ItemStack */
     /**
@@ -58,6 +58,23 @@ interface ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld> {
      * @return The converted world.
      */
     fun convertIntoPlatformWorld(world: ReplayWorld): NativeWorld?
+    /* World */
+
+    /* Entity */
+    /**
+     * Converts a [NativeEntity] into a [ReplayEntity].
+     * @param entity The entity to convert.
+     * @return The converted entity.
+     */
+    fun convertIntoReplayEntity(entity: NativeEntity): ReplayEntity
+
+    /**
+     * Converts a [ReplayEntity] into a [NativeEntity].
+     * @param entity The entity to convert.
+     * @return The converted entity.
+     */
+    fun convertIntoPlatformEntity(entity: ReplayEntity): NativeEntity?
+    /* Entity */
 
     /**
      * Create a replayer for this platform.
@@ -65,10 +82,9 @@ interface ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld> {
      * @param replaySystem The replay system in use.
      * @param replay The replay to play.
      */
-    fun <Platform : ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld>,
+    fun <Platform : ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld, NativeEntity>,
             System : ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, Platform>> createReplayer(
         replaySystem: System,
         replay: Replay
     ): Replayer<NativeItemStack, NativeViewer, NativeWorld, Platform, System>
-    /* World */
 }
