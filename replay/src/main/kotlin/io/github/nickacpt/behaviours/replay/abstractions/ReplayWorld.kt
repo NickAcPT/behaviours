@@ -11,4 +11,6 @@ interface ReplayWorld {
      * The uuid of the world.
      */
     val id: UUID
+
+    val entities: List<ReplayEntity>
 }

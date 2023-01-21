@@ -8,4 +8,10 @@ interface ReplayEntity {
      * The unique index-based id of this entity.
      */
     val id: Int
+
+    /**
+     * The current entity data.
+     */
+    val data: ReplayEntityData
 }
+
