@@ -1,9 +1,9 @@
 package io.github.nickacpt.behaviours.replay
 
-import io.github.nickacpt.behaviours.replay.abstractions.ReplayPlatform
-import io.github.nickacpt.behaviours.replay.abstractions.ReplayViewer
+import io.github.nickacpt.behaviours.replay.abstractions.*
 import io.github.nickacpt.behaviours.replay.metadata.ReplayMetadataKey
 import io.github.nickacpt.behaviours.replay.metadata.ReplayMetadataProvider
+import io.github.nickacpt.behaviours.replay.metadata.def.DefaultMetadataKeys
 import io.github.nickacpt.behaviours.replay.metadata.def.DefaultMetadataProvider
 import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
@@ -16,24 +16,26 @@ import net.kyori.adventure.key.Key
  * @param platform The [ReplayPlatform] to be used.
  * @param provideDefaultMetadata Whether to provide default metadata.
  *
- * @param NativeItemStack The native NativeItemStack type of the platform.
+ * @param ItemStack The native ItemStack type of the platform.
  * @param Platform The platform in which the replay system exists.
  */
 class ReplaySystem<
-        NativeItemStack,
-        NativeViewer,
-        NativeWorld, NativeEntity,
-        Platform : ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld, NativeEntity>,
+        Viewer : ReplayViewer,
+        Entity : RecordableReplayEntity,
+        Platform : ReplayPlatform<Viewer, Entity>,
         >(
     private val platform: Platform,
     provideDefaultMetadata: Boolean = true
 ) {
     private val registeredMetadataKeys: MutableMap<Key, ReplayMetadataKey<*>> = mutableMapOf()
 
+    var defaultMetadataKeys: DefaultMetadataKeys? = null
+        private set
+
     init {
         if (provideDefaultMetadata) {
             with(DefaultMetadataProvider) {
-                registerDefaultMetadata()
+                defaultMetadataKeys = registerDefaultMetadata()
             }
         }
     }
@@ -78,27 +80,12 @@ class ReplaySystem<
      */
     fun createReplaySession(
         replay: Replay,
-        replayViewers: List<ReplayViewer>
-    ): ReplaySession<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform,
-            ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform>> {
+        replayViewers: List<Viewer>
+    ): ReplaySession<Viewer, Entity, Platform,
+            ReplaySystem<Viewer, Entity, Platform>> {
         val replayer = platform.createReplayer(this, replay)
         return ReplaySession(this, replay, replayViewers, replayer).also {
             replayer.prepareReplaySession(replay, it, replayViewers)
         }
-    }
-
-    /**
-     * Creates a new [ReplaySession] for the given [Replay] and [NativeViewer]s.
-     *
-     * @param replay The [Replay] to create the session for.
-     * @param replayViewers The [NativeViewer]s to create the session for.
-     */
-    @JvmName("createNativeViewerReplaySession")
-    fun createReplaySession(
-        replay: Replay,
-        replayViewers: List<NativeViewer>
-    ): ReplaySession<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform,
-            ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform>> {
-        return createReplaySession(replay, replayViewers.map { platform.convertIntoReplayViewer(it) })
     }
 }

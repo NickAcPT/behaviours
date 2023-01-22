@@ -1,6 +1,7 @@
 package io.github.nickacpt.behaviours.replay.playback
 
 import io.github.nickacpt.behaviours.replay.ReplaySystem
+import io.github.nickacpt.behaviours.replay.abstractions.RecordableReplayEntity
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayPlatform
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayViewer
 import io.github.nickacpt.behaviours.replay.model.Replay
@@ -13,20 +14,16 @@ import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
  * It takes in a number of generic types that represent the specific implementation
  * details of the platform it is being used on.
  *
- * @param NativeItemStack The native item stack type of the platform.
- * @param NativeViewer The native viewer type of the platform.
- * @param NativeWorld The native world type of the platform.
- * @param NativeEntity The native entity type of the platform.
+ * @param Viewer The viewer type of the platform.
+ * @param Entity The entity type of the platform.
  * @param Platform The platform in which the replay system exists.
  * @param System The replay system being used.
  */
 interface Replayer<
-        NativeItemStack,
-        NativeViewer,
-        NativeWorld,
-        NativeEntity,
-        Platform : ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld, NativeEntity>,
-        System : ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform>> {
+        Viewer : ReplayViewer,
+        Entity : RecordableReplayEntity,
+        Platform : ReplayPlatform<Viewer, Entity>,
+        System : ReplaySystem<Viewer, Entity, Platform>> {
 
     /**
      * Prepare the replay session for the given replay, replay session, and replay viewers
@@ -37,8 +34,7 @@ interface Replayer<
      */
     fun prepareReplaySession(
         replay: Replay,
-        replaySession: ReplaySession<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform,
-                ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform>>,
-        replayViewers: List<ReplayViewer>
+        replaySession: ReplaySession<Viewer, Entity, Platform, System>,
+        replayViewers: List<Viewer>
     )
 }

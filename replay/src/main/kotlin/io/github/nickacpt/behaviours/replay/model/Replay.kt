@@ -1,6 +1,8 @@
 package io.github.nickacpt.behaviours.replay.model
 
 import io.github.nickacpt.behaviours.replay.metadata.ReplayMetadataKey
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.JoinConfiguration
 import java.util.*
 
 /**
@@ -11,6 +13,34 @@ import java.util.*
  */
 data class Replay(
     val id: UUID,
-    val metadata: Map<ReplayMetadataKey<in Any>, Any>,
+    val entities: List<RecordedReplayEntity>,
+    val metadata: MutableMap<ReplayMetadataKey<in Any>, out Any>,
     val recordables: List<Recordable>
-)
+) {
+    operator fun <T> get(key: ReplayMetadataKey<in T>): T? {
+        // This cast is not useless, it's required to make the compiler happy
+        @Suppress(
+            "USELESS_CAST",
+            "UNCHECKED_CAST"
+        )
+        return metadata[key as ReplayMetadataKey<*>] as? T?
+    }
+
+    operator fun <T : Any> set(key: ReplayMetadataKey<in T>, value: T) {
+        @Suppress(
+            "UNCHECKED_CAST"
+        )
+        (metadata as MutableMap<ReplayMetadataKey<*>, Any>)[key] = value
+    }
+
+    fun computeDisplayLore(): Component {
+        return Component.join(
+            JoinConfiguration.separator(
+                Component.newline().append(Component.newline())
+            ),
+            metadata.map { (key, value) ->
+                key.provider?.provideDisplay(this, value)
+            }.filterNotNull()
+        )
+    }
+}

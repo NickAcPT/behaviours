@@ -1,8 +1,7 @@
 package io.github.nickacpt.behaviours.replay.playback.session
 
 import io.github.nickacpt.behaviours.replay.ReplaySystem
-import io.github.nickacpt.behaviours.replay.abstractions.ReplayPlatform
-import io.github.nickacpt.behaviours.replay.abstractions.ReplayViewer
+import io.github.nickacpt.behaviours.replay.abstractions.*
 import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.playback.Replayer
 import net.kyori.adventure.audience.Audience
@@ -17,23 +16,21 @@ import net.kyori.adventure.audience.ForwardingAudience
  * @param settings The settings of the replay session.
  * @param replayer The player instance that is playing the replay.
  *
- * @param NativeItemStack The native ItemStack type of the platform.
- * @param NativeViewer The native viewer type of the platform.
+ * @param ItemStack The ItemStack type of the platform.
+ * @param Viewer The viewer type of the platform.
  * @param Platform The platform type.
  * @param System The ReplaySystem type.
  */
 class ReplaySession<
-        NativeItemStack,
-        NativeViewer,
-        NativeWorld,
-        NativeEntity,
-        Platform : ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld, NativeEntity>,
-        System : ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform>
+        Viewer : ReplayViewer,
+        Entity : RecordableReplayEntity,
+        Platform : ReplayPlatform<Viewer, Entity>,
+        System : ReplaySystem<Viewer, Entity, Platform>
         >(
     private val system: System,
     val replay: Replay,
-    private val viewers: List<ReplayViewer>,
-    val replayer: Replayer<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform, System>,
+    private val viewers: List<Viewer>,
+    val replayer: Replayer<Viewer, Entity, Platform, System>,
     private val settings: ReplaySessionSettings = ReplaySessionSettings()
 ) : ForwardingAudience {
     /**
