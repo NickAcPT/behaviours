@@ -26,13 +26,14 @@ class ReplaySession<
         NativeItemStack,
         NativeViewer,
         NativeWorld,
-        Platform : ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld>,
-        System : ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, Platform>
+        NativeEntity,
+        Platform : ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld, NativeEntity>,
+        System : ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform>
         >(
     private val system: System,
     val replay: Replay,
     private val viewers: List<ReplayViewer>,
-    val replayer: Replayer<NativeItemStack, NativeViewer, NativeWorld, Platform, System>,
+    val replayer: Replayer<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform, System>,
     private val settings: ReplaySessionSettings = ReplaySessionSettings()
 ) : ForwardingAudience {
     /**

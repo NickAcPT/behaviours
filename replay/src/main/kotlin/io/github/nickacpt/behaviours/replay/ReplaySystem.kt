@@ -22,8 +22,8 @@ import net.kyori.adventure.key.Key
 class ReplaySystem<
         NativeItemStack,
         NativeViewer,
-        NativeWorld,
-        Platform : ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld>,
+        NativeWorld, NativeEntity,
+        Platform : ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld, NativeEntity>,
         >(
     private val platform: Platform,
     provideDefaultMetadata: Boolean = true
@@ -79,7 +79,8 @@ class ReplaySystem<
     fun createReplaySession(
         replay: Replay,
         replayViewers: List<ReplayViewer>
-    ): ReplaySession<NativeItemStack, NativeViewer, NativeWorld, Platform, ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, Platform>> {
+    ): ReplaySession<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform,
+            ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform>> {
         val replayer = platform.createReplayer(this, replay)
         return ReplaySession(this, replay, replayViewers, replayer)
     }
@@ -94,7 +95,8 @@ class ReplaySystem<
     fun createReplaySession(
         replay: Replay,
         replayViewers: List<NativeViewer>
-    ): ReplaySession<NativeItemStack, NativeViewer, NativeWorld, Platform, ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, Platform>> {
+    ): ReplaySession<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform,
+            ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform>> {
         return createReplaySession(replay, replayViewers.map { platform.convertIntoReplayViewer(it) })
     }
 }

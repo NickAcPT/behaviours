@@ -7,6 +7,7 @@ interface Replayer<
         NativeItemStack,
         NativeViewer,
         NativeWorld,
-        Platform : ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld>,
-        System : ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, Platform>> {
+        NativeEntity,
+        Platform : ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld, NativeEntity>,
+        System : ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform>> {
 }

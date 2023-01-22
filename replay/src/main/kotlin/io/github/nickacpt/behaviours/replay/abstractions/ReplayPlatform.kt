@@ -35,13 +35,6 @@ interface ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld, NativeEntit
      * @return The converted viewer.
      */
     fun convertIntoReplayViewer(viewer: NativeViewer): ReplayViewer
-
-    /**
-     * Converts a [ReplayViewer] into a [NativeViewer].
-     * @param viewer The viewer to convert.
-     * @return The converted viewer.
-     */
-    fun convertIntoPlatformViewer(viewer: ReplayViewer): NativeViewer?
     /* Viewer */
 
     /* World */
@@ -51,13 +44,6 @@ interface ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld, NativeEntit
      * @return The converted world.
      */
     fun convertIntoReplayWorld(world: NativeWorld): ReplayWorld
-
-    /**
-     * Converts a [ReplayWorld] into a [NativeWorld].
-     * @param world The world to convert.
-     * @return The converted world.
-     */
-    fun convertIntoPlatformWorld(world: ReplayWorld): NativeWorld?
     /* World */
 
     /* Entity */
@@ -67,13 +53,6 @@ interface ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld, NativeEntit
      * @return The converted entity.
      */
     fun convertIntoReplayEntity(entity: NativeEntity): ReplayEntity
-
-    /**
-     * Converts a [ReplayEntity] into a [NativeEntity].
-     * @param entity The entity to convert.
-     * @return The converted entity.
-     */
-    fun convertIntoPlatformEntity(entity: ReplayEntity): NativeEntity?
     /* Entity */
 
     /**
@@ -83,8 +62,8 @@ interface ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld, NativeEntit
      * @param replay The replay to play.
      */
     fun <Platform : ReplayPlatform<NativeItemStack, NativeViewer, NativeWorld, NativeEntity>,
-            System : ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, Platform>> createReplayer(
+            System : ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform>> createReplayer(
         replaySystem: System,
         replay: Replay
-    ): Replayer<NativeItemStack, NativeViewer, NativeWorld, Platform, System>
+    ): Replayer<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform, System>
 }
