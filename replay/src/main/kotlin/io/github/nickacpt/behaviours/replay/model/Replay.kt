@@ -11,6 +11,6 @@ import java.util.*
  */
 data class Replay(
     val id: UUID,
-    val metadata: Map<ReplayMetadataKey<*>, *>,
+    val metadata: Map<ReplayMetadataKey<in Any>, Any>,
     val recordables: List<Recordable>
 )

@@ -82,7 +82,9 @@ class ReplaySystem<
     ): ReplaySession<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform,
             ReplaySystem<NativeItemStack, NativeViewer, NativeWorld, NativeEntity, Platform>> {
         val replayer = platform.createReplayer(this, replay)
-        return ReplaySession(this, replay, replayViewers, replayer)
+        return ReplaySession(this, replay, replayViewers, replayer).also {
+            replayer.prepareReplaySession(replay, it, replayViewers)
+        }
     }
 
     /**
