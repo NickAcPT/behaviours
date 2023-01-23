@@ -1,10 +1,7 @@
 package io.github.nickacpt.behaviours.replay.playback
 
 import io.github.nickacpt.behaviours.replay.ReplaySystem
-import io.github.nickacpt.behaviours.replay.abstractions.ReplayEntity
-import io.github.nickacpt.behaviours.replay.abstractions.ReplayPlatform
-import io.github.nickacpt.behaviours.replay.abstractions.ReplayViewer
-import io.github.nickacpt.behaviours.replay.abstractions.ReplayWorld
+import io.github.nickacpt.behaviours.replay.abstractions.*
 import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
 
@@ -39,5 +36,12 @@ interface Replayer<
         replaySession: ReplaySession<Viewer, World, Entity, Platform, System>,
         replayViewers: List<Viewer>
     ): World
+
+    fun <Platform : ReplayPlatform<Viewer, World, Entity>,
+            System : ReplaySystem<Viewer, World, Entity, Platform>,
+            Session : ReplaySession<Viewer, World, Entity, Platform, System>> createEntityManager(
+        replaySystem: System,
+        replaySession: Session
+    ): EntityManager<Entity>
 
 }

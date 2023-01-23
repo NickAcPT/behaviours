@@ -41,6 +41,12 @@ class ReplaySession<
     internal fun initialize(world: World) {
         this.world = world
         sendMessage(replay.computeDisplayLore())
+
+        replayer.createEntityManager(system, this).also {
+            replay.entities.forEach { entity ->
+                it.spawnEntity(entity, entity.firstPosition)
+            }
+        }
     }
 
     /**
