@@ -49,4 +49,9 @@ interface Replayer<
         viewer: Viewer,
     )
 
+    fun updateReplaySessionViewerControls(
+        replaySession: ReplaySession<Viewer, World, Entity, Platform, System>,
+        viewer: Viewer,
+    )
+
 }

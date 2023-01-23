@@ -97,7 +97,7 @@ class ReplaySystem<
 
         return ReplaySession(this, replay, replayViewers, replayer).also {
             replaySessionsList.add(it)
-            it.initialize(replayer.prepareReplaySession(replay, it, replayViewers))
+            logic.onReplaySessionStart(it, replay, replayer, replayViewers)
         }
     }
 

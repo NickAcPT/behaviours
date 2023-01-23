@@ -6,8 +6,6 @@ import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.playback.Replayer
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
-import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
 
 /**
  * Represents a playback session of a [Replay].
@@ -44,15 +42,6 @@ class ReplaySession<
 
     internal fun initialize(world: World) {
         this.world = world
-
-        // Debug Only
-        sendMessage(Component.text("Replay", NamedTextColor.GOLD).hoverEvent(replay.computeDisplayLore()))
-
-        entityManager.also {
-            replay.entities.forEach { entity ->
-                it.spawnEntity(entity, entity.firstPosition)
-            }
-        }
     }
 
     /**
