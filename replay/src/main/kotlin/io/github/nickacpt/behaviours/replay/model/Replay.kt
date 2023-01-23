@@ -1,6 +1,7 @@
 package io.github.nickacpt.behaviours.replay.model
 
-import io.github.nickacpt.behaviours.replay.metadata.ReplayMetadataKey
+import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataKey
+import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataProvider
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import java.util.*
@@ -14,7 +15,7 @@ import java.util.*
 data class Replay(
     val id: UUID,
     val entities: List<RecordedReplayEntity>,
-    val metadata: MutableMap<ReplayMetadataKey<in Any>, out Any>,
+    val metadata: MutableMap<ReplayMetadataKey<out Any>, out Any>,
     val recordables: List<Recordable>
 ) {
     operator fun <T> get(key: ReplayMetadataKey<in T>): T? {
@@ -39,7 +40,8 @@ data class Replay(
                 Component.newline().append(Component.newline())
             ),
             metadata.map { (key, value) ->
-                key.provider?.provideDisplay(this, value)
+                @Suppress("UNCHECKED_CAST")
+                (key.provider as? ReplayMetadataProvider<Any>)?.provideDisplay(this, value)
             }.filterNotNull()
         )
     }

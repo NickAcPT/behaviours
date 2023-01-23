@@ -16,7 +16,7 @@ import net.kyori.adventure.audience.ForwardingAudience
  * @param settings The settings of the replay session.
  * @param replayer The player instance that is playing the replay.
  *
- * @param ItemStack The ItemStack type of the platform.
+ * @param World The world type of the platform.
  * @param Viewer The viewer type of the platform.
  * @param Platform The platform type.
  * @param System The ReplaySystem type.
@@ -37,6 +37,8 @@ class ReplaySession<
 
     lateinit var world: World
         private set
+
+    val entityManager: EntityManager<Entity> = replayer.createEntityManager(system, this)
 
     internal fun initialize(world: World) {
         this.world = world

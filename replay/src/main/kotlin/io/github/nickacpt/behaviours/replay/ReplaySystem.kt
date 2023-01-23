@@ -1,10 +1,10 @@
 package io.github.nickacpt.behaviours.replay
 
 import io.github.nickacpt.behaviours.replay.abstractions.*
-import io.github.nickacpt.behaviours.replay.metadata.ReplayMetadataKey
-import io.github.nickacpt.behaviours.replay.metadata.ReplayMetadataProvider
-import io.github.nickacpt.behaviours.replay.metadata.def.DefaultMetadataKeys
-import io.github.nickacpt.behaviours.replay.metadata.def.DefaultMetadataProvider
+import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataKey
+import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataProvider
+import io.github.nickacpt.behaviours.replay.model.metadata.def.DefaultMetadataKeys
+import io.github.nickacpt.behaviours.replay.model.metadata.def.DefaultMetadataProvider
 import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
 import net.kyori.adventure.key.Key

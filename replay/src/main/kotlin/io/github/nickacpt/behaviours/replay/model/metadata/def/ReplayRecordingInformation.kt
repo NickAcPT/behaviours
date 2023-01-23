@@ -1,7 +1,7 @@
-package io.github.nickacpt.behaviours.replay.metadata.def
+package io.github.nickacpt.behaviours.replay.model.metadata.def
 
 import io.github.nickacpt.behaviours.replay.model.Replay
-import io.github.nickacpt.behaviours.replay.metadata.ReplayMetadataProvider
+import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataProvider
 import net.kyori.adventure.text.Component
 import java.time.Instant
 import java.time.format.DateTimeFormatter

@@ -1,4 +1,4 @@
-package io.github.nickacpt.behaviours.replay.metadata.def
+package io.github.nickacpt.behaviours.replay.model.metadata.def
 
 import io.github.nickacpt.behaviours.replay.ReplaySystem
 import net.kyori.adventure.key.Key

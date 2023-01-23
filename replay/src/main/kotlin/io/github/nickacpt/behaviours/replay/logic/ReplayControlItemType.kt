@@ -1,4 +1,4 @@
-package io.github.nickacpt.behaviours.replay.items
+package io.github.nickacpt.behaviours.replay.logic
 
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayItemStack
 
