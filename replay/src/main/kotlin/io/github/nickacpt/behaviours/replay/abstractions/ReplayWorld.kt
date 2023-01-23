@@ -12,5 +12,5 @@ interface ReplayWorld {
      */
     val id: UUID
 
-    val entities: List<RecordableReplayEntity>
+    val entities: List<ReplayEntity>
 }

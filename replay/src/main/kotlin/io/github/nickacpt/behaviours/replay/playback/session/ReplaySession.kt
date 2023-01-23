@@ -23,16 +23,26 @@ import net.kyori.adventure.audience.ForwardingAudience
  */
 class ReplaySession<
         Viewer : ReplayViewer,
-        Entity : RecordableReplayEntity,
-        Platform : ReplayPlatform<Viewer, Entity>,
-        System : ReplaySystem<Viewer, Entity, Platform>
+        World: ReplayWorld,
+        Entity : ReplayEntity,
+        Platform : ReplayPlatform<Viewer, World, Entity>,
+        System : ReplaySystem<Viewer, World, Entity, Platform>
         >(
     private val system: System,
     val replay: Replay,
     private val viewers: List<Viewer>,
-    val replayer: Replayer<Viewer, Entity, Platform, System>,
+    val replayer: Replayer<Viewer, World, Entity, Platform, System>,
     private val settings: ReplaySessionSettings = ReplaySessionSettings()
 ) : ForwardingAudience {
+
+    lateinit var world: World
+        private set
+
+    internal fun initialize(world: World) {
+        this.world = world
+        sendMessage(replay.computeDisplayLore())
+    }
+
     /**
      * The current tick of the replay playback.
      */

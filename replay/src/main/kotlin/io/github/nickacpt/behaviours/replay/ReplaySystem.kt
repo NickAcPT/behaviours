@@ -21,8 +21,9 @@ import net.kyori.adventure.key.Key
  */
 class ReplaySystem<
         Viewer : ReplayViewer,
-        Entity : RecordableReplayEntity,
-        Platform : ReplayPlatform<Viewer, Entity>,
+        World : ReplayWorld,
+        Entity : ReplayEntity,
+        Platform : ReplayPlatform<Viewer, World, Entity>,
         >(
     private val platform: Platform,
     provideDefaultMetadata: Boolean = true
@@ -81,11 +82,11 @@ class ReplaySystem<
     fun createReplaySession(
         replay: Replay,
         replayViewers: List<Viewer>
-    ): ReplaySession<Viewer, Entity, Platform,
-            ReplaySystem<Viewer, Entity, Platform>> {
+    ): ReplaySession<Viewer, World, Entity, Platform,
+            ReplaySystem<Viewer, World, Entity, Platform>> {
         val replayer = platform.createReplayer(this, replay)
         return ReplaySession(this, replay, replayViewers, replayer).also {
-            replayer.prepareReplaySession(replay, it, replayViewers)
+            it.initialize(replayer.prepareReplaySession(replay, it, replayViewers))
         }
     }
 }

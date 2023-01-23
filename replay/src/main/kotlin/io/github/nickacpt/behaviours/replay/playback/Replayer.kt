@@ -1,9 +1,10 @@
 package io.github.nickacpt.behaviours.replay.playback
 
 import io.github.nickacpt.behaviours.replay.ReplaySystem
-import io.github.nickacpt.behaviours.replay.abstractions.RecordableReplayEntity
+import io.github.nickacpt.behaviours.replay.abstractions.ReplayEntity
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayPlatform
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayViewer
+import io.github.nickacpt.behaviours.replay.abstractions.ReplayWorld
 import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
 
@@ -21,9 +22,10 @@ import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
  */
 interface Replayer<
         Viewer : ReplayViewer,
-        Entity : RecordableReplayEntity,
-        Platform : ReplayPlatform<Viewer, Entity>,
-        System : ReplaySystem<Viewer, Entity, Platform>> {
+        World : ReplayWorld,
+        Entity : ReplayEntity,
+        Platform : ReplayPlatform<Viewer, World, Entity>,
+        System : ReplaySystem<Viewer, World, Entity, Platform>> {
 
     /**
      * Prepare the replay session for the given replay, replay session, and replay viewers
@@ -34,7 +36,8 @@ interface Replayer<
      */
     fun prepareReplaySession(
         replay: Replay,
-        replaySession: ReplaySession<Viewer, Entity, Platform, System>,
+        replaySession: ReplaySession<Viewer, World, Entity, Platform, System>,
         replayViewers: List<Viewer>
-    )
+    ): World
+
 }
