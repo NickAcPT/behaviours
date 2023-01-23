@@ -44,4 +44,9 @@ interface Replayer<
         replaySession: Session
     ): EntityManager<Entity>
 
+    fun updateReplaySessionStateForViewer(
+        replaySession: ReplaySession<Viewer, World, Entity, Platform, System>,
+        viewer: Viewer,
+    )
+
 }

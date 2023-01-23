@@ -22,4 +22,15 @@ interface ReplayPlatform<
         replaySystem: System,
         replay: Replay
     ): Replayer<Viewer, World, Entity, Platform, System>
+
+    /**
+     * Schedule a repeating task.
+     *
+     * @param delay The delay between each execution of the task (in ticks).
+     * @param task The task to execute.
+     */
+    fun registerRepeatingTask(
+        delay: Long,
+        task: () -> Unit
+    )
 }

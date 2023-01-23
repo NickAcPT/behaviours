@@ -6,6 +6,8 @@ import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.playback.Replayer
 import net.kyori.adventure.audience.Audience
 import net.kyori.adventure.audience.ForwardingAudience
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 
 /**
  * Represents a playback session of a [Replay].
@@ -23,16 +25,16 @@ import net.kyori.adventure.audience.ForwardingAudience
  */
 class ReplaySession<
         Viewer : ReplayViewer,
-        World: ReplayWorld,
+        World : ReplayWorld,
         Entity : ReplayEntity,
         Platform : ReplayPlatform<Viewer, World, Entity>,
         System : ReplaySystem<Viewer, World, Entity, Platform>
         >(
     private val system: System,
     val replay: Replay,
-    private val viewers: List<Viewer>,
+    val viewers: List<Viewer>,
     val replayer: Replayer<Viewer, World, Entity, Platform, System>,
-    private val settings: ReplaySessionSettings = ReplaySessionSettings()
+    val settings: ReplaySessionSettings = ReplaySessionSettings()
 ) : ForwardingAudience {
 
     lateinit var world: World
@@ -42,9 +44,11 @@ class ReplaySession<
 
     internal fun initialize(world: World) {
         this.world = world
-        sendMessage(replay.computeDisplayLore())
 
-        replayer.createEntityManager(system, this).also {
+        // Debug Only
+        sendMessage(Component.text("Replay", NamedTextColor.GOLD).hoverEvent(replay.computeDisplayLore()))
+
+        entityManager.also {
             replay.entities.forEach { entity ->
                 it.spawnEntity(entity, entity.firstPosition)
             }

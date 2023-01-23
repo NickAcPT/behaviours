@@ -1,11 +1,12 @@
 package io.github.nickacpt.behaviours.replay
 
 import io.github.nickacpt.behaviours.replay.abstractions.*
+import io.github.nickacpt.behaviours.replay.logic.ReplayLogic
+import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataKey
 import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataProvider
 import io.github.nickacpt.behaviours.replay.model.metadata.def.DefaultMetadataKeys
 import io.github.nickacpt.behaviours.replay.model.metadata.def.DefaultMetadataProvider
-import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
 import net.kyori.adventure.key.Key
 
@@ -25,10 +26,18 @@ class ReplaySystem<
         Entity : ReplayEntity,
         Platform : ReplayPlatform<Viewer, World, Entity>,
         >(
-    private val platform: Platform,
+    internal val platform: Platform,
     provideDefaultMetadata: Boolean = true
 ) {
     private val registeredMetadataKeys: MutableMap<Key, ReplayMetadataKey<*>> = mutableMapOf()
+
+    private val replaySessionsList =
+        mutableListOf<ReplaySession<Viewer, World, Entity, Platform, ReplaySystem<Viewer, World, Entity, Platform>>>()
+
+    val logic = ReplayLogic(this, platform)
+
+    val replaySessions: List<ReplaySession<Viewer, World, Entity, Platform, ReplaySystem<Viewer, World, Entity, Platform>>>
+        get() = replaySessionsList
 
     var defaultMetadataKeys: DefaultMetadataKeys? = null
         private set
@@ -85,8 +94,14 @@ class ReplaySystem<
     ): ReplaySession<Viewer, World, Entity, Platform,
             ReplaySystem<Viewer, World, Entity, Platform>> {
         val replayer = platform.createReplayer(this, replay)
+
         return ReplaySession(this, replay, replayViewers, replayer).also {
+            replaySessionsList.add(it)
             it.initialize(replayer.prepareReplaySession(replay, it, replayViewers))
         }
+    }
+
+    fun initialize() {
+        logic.initialize()
     }
 }
