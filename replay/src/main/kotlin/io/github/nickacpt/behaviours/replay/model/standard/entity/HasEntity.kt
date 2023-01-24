@@ -12,5 +12,5 @@ interface HasEntity {
     /**
      * The [ReplayEntity] this object is associated with.
      */
-    val entity: RecordedReplayEntity
+    var entity: RecordedReplayEntity?
 }

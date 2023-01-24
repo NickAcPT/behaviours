@@ -15,5 +15,5 @@ import io.github.nickacpt.behaviours.replay.model.standard.entity.state.EntitySt
  */
 data class EntityStateRecordable(
     val type: EntityStateType,
-    override val entity: RecordedReplayEntity
+    override var entity: RecordedReplayEntity?
 ) : StandardRecordable(), HasEntity

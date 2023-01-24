@@ -16,9 +16,4 @@ sealed class EntityStateType {
      * Represents the state when an entity is removed from the world.
      */
     object Despawn : EntityStateType()
-    /**
-     * Represents the state when an entity swings its arm.
-     * @param hand The hand that the entity swung.
-     */
-    data class SwingArm(val hand: ReplayEntityHand) : EntityStateType()
 }

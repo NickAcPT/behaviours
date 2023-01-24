@@ -122,11 +122,12 @@ class ReplaySystem<
     }
 
     fun createReplayRecorder(
+        world: World,
         entities: List<Entity>,
         configuration: RecordingConfiguration = RecordingConfiguration()
     ): ReplayRecorder<World, Viewer, Entity, Platform,
             ReplaySystem<World, Viewer, Entity, Platform>> {
-        return ReplayRecorder(this, entities, configuration).also {
+        return platform.createReplayRecorder(this, world, entities, configuration).also {
             replayRecordersList.add(it)
         }
     }

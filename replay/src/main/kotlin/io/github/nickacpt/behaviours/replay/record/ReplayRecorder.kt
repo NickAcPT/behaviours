@@ -11,14 +11,15 @@ import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataKey
 import io.github.nickacpt.behaviours.replay.model.standard.EndingRecordable
 import io.github.nickacpt.behaviours.replay.model.standard.TickRecordable
+import io.github.nickacpt.behaviours.replay.model.standard.entity.HasEntity
 import java.util.*
 
-class ReplayRecorder<
+open class ReplayRecorder<
         World : ReplayWorld,
         Viewer : ReplayViewer<World>,
         Entity : ReplayEntity,
         Platform : ReplayPlatform<World, Viewer, Entity>,
-        System : ReplaySystem<World, Viewer, Entity, Platform>> internal constructor(
+        System : ReplaySystem<World, Viewer, Entity, Platform>>(
     val system: System,
     val entities: List<Entity>,
     val configuration: RecordingConfiguration = RecordingConfiguration()
@@ -57,7 +58,12 @@ class ReplayRecorder<
         currentRecordables.add(recordable)
     }
 
-    fun startRecording(): Boolean {
+    fun <R> addEntityRecordable(recordable: R, entity: Entity) where R : Recordable, R : HasEntity {
+        recordable.entity = replay?.entities?.firstOrNull { it.id == entity.id } ?: return
+        addRecordable(recordable)
+    }
+
+    open fun startRecording(): Boolean {
         if (recording) return false
 
         recording = true
@@ -67,7 +73,7 @@ class ReplayRecorder<
         return true
     }
 
-    fun stopRecording(): Boolean {
+    open fun stopRecording(): Boolean {
         if (!recording) return false
 
         addRecordable(EndingRecordable)
