@@ -8,7 +8,7 @@ import java.util.*
 /**
  * Represents a viewer on a [Replay].
  */
-interface ReplayViewer : ForwardingAudience.Single {
+interface ReplayViewer<World: ReplayWorld> : ForwardingAudience.Single {
 
     /**
      * The unique ID of the viewer.
@@ -18,7 +18,7 @@ interface ReplayViewer : ForwardingAudience.Single {
     /**
      * The world the viewer is in.
      */
-    val world: ReplayWorld?
+    val world: World?
 
     /**
      * The audience used to send messages to the viewer.

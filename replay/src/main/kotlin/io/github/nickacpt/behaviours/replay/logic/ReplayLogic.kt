@@ -11,26 +11,23 @@ import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 
-class ReplayLogic<Viewer : ReplayViewer,
-        World : ReplayWorld, Entity : ReplayEntity,
-        Platform : ReplayPlatform<Viewer, World, Entity>,
-        System : ReplaySystem<Viewer, World, Entity, Platform>>(
+class ReplayLogic<World : ReplayWorld,
+        Viewer : ReplayViewer<World>,
+        Entity : ReplayEntity,
+        Platform : ReplayPlatform<World, Viewer, Entity>,
+        System : ReplaySystem<World, Viewer, Entity, Platform>,
+        Session : ReplaySession<World, Viewer, Entity, Platform, System>,
+        ReplayerType : Replayer<World, Viewer, Entity, Platform, System>
+
+        >(
     val system: System,
     val platform: Platform
 ) {
 
-    private fun registerRepeatingTask(delay: Long, task: () -> Unit) {
-        platform.registerRepeatingTask(delay, task)
-    }
-
-    fun initialize() {
-        registerRepeatingTask(5, this::updateSessionStatusForViewers)
-    }
-
     fun onReplaySessionStart(
-        session: ReplaySession<Viewer, World, Entity, Platform, System>,
+        session: ReplaySession<World, Viewer, Entity, Platform, System>,
         replay: Replay,
-        replayer: Replayer<Viewer, World, Entity, Platform, System>,
+        replayer: ReplayerType,
         replayViewers: List<Viewer>,
     ) {
         session.initialize(replayer.prepareReplaySession(replay, session, replayViewers))
@@ -49,7 +46,7 @@ class ReplayLogic<Viewer : ReplayViewer,
         }
     }
 
-    private fun updateSessionStatusForViewers() {
+    internal fun updateSessionStatusForViewers() {
         system.replaySessions.forEach { session ->
             session.viewers.forEach { viewer ->
                 session.replayer.updateReplaySessionStateForViewer(session, viewer)
@@ -57,5 +54,23 @@ class ReplayLogic<Viewer : ReplayViewer,
         }
     }
 
+    fun tickSessions() {
+        system.replaySessions.forEach { session ->
+            @Suppress("UNCHECKED_CAST") // We know that the session is of the correct type, it's also erased anyway so not like it matters
+            (session as Session).tickSession()
+        }
+    }
 
+    fun onReplayControlItemInteraction(
+        session: Session,
+        viewer: Viewer,
+        controlItem: ReplayControlItemType,
+        isRightClick: Boolean
+    ) {
+
+    }
+
+    fun Session.tickSession() {
+
+    }
 }

@@ -21,10 +21,10 @@ import net.kyori.adventure.key.Key
  * @param Platform The platform in which the replay system exists.
  */
 class ReplaySystem<
-        Viewer : ReplayViewer,
         World : ReplayWorld,
+        Viewer : ReplayViewer<World>,
         Entity : ReplayEntity,
-        Platform : ReplayPlatform<Viewer, World, Entity>,
+        Platform : ReplayPlatform<World, Viewer, Entity>,
         >(
     internal val platform: Platform,
     provideDefaultMetadata: Boolean = true
@@ -32,11 +32,12 @@ class ReplaySystem<
     private val registeredMetadataKeys: MutableMap<Key, ReplayMetadataKey<*>> = mutableMapOf()
 
     private val replaySessionsList =
-        mutableListOf<ReplaySession<Viewer, World, Entity, Platform, ReplaySystem<Viewer, World, Entity, Platform>>>()
+        mutableListOf<ReplaySession<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>>>()
 
-    val logic = ReplayLogic(this, platform)
+    val logic =
+        ReplayLogic(this, platform)
 
-    val replaySessions: List<ReplaySession<Viewer, World, Entity, Platform, ReplaySystem<Viewer, World, Entity, Platform>>>
+    val replaySessions: List<ReplaySession<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>>>
         get() = replaySessionsList
 
     var defaultMetadataKeys: DefaultMetadataKeys? = null
@@ -91,8 +92,8 @@ class ReplaySystem<
     fun createReplaySession(
         replay: Replay,
         replayViewers: List<Viewer>
-    ): ReplaySession<Viewer, World, Entity, Platform,
-            ReplaySystem<Viewer, World, Entity, Platform>> {
+    ): ReplaySession<World, Viewer, Entity, Platform,
+            ReplaySystem<World, Viewer, Entity, Platform>> {
         val replayer = platform.createReplayer(this, replay)
 
         return ReplaySession(this, replay, replayViewers, replayer).also {
@@ -102,6 +103,6 @@ class ReplaySystem<
     }
 
     fun initialize() {
-        logic.initialize()
+        logic.platform.registerRepeatingTask(5, logic::updateSessionStatusForViewers)
     }
 }

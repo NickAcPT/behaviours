@@ -22,20 +22,23 @@ import net.kyori.adventure.audience.ForwardingAudience
  * @param System The ReplaySystem type.
  */
 class ReplaySession<
-        Viewer : ReplayViewer,
         World : ReplayWorld,
+        Viewer : ReplayViewer<World>,
         Entity : ReplayEntity,
-        Platform : ReplayPlatform<Viewer, World, Entity>,
-        System : ReplaySystem<Viewer, World, Entity, Platform>
+        Platform : ReplayPlatform<World, Viewer, Entity>,
+        System : ReplaySystem<World, Viewer, Entity, Platform>
         >(
     private val system: System,
     val replay: Replay,
     val viewers: List<Viewer>,
-    val replayer: Replayer<Viewer, World, Entity, Platform, System>,
-    val settings: ReplaySessionSettings = ReplaySessionSettings()
+    val replayer: Replayer<World, Viewer, Entity, Platform, System>,
+    settings: ReplaySessionSettings = ReplaySessionSettings()
 ) : ForwardingAudience {
 
     lateinit var world: World
+        private set
+
+    var settings = settings
         private set
 
     val entityManager: EntityManager<Entity> = replayer.createEntityManager(system, this)

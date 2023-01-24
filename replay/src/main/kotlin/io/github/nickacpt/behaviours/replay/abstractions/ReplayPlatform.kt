@@ -8,8 +8,8 @@ import io.github.nickacpt.behaviours.replay.playback.Replayer
  * Represents a platform that can be used to play and record a [Replay].
  */
 interface ReplayPlatform<
-        Viewer : ReplayViewer,
         World : ReplayWorld,
+        Viewer : ReplayViewer<World>,
         Entity : ReplayEntity> {
     /**
      * Create a replayer for this platform.
@@ -17,11 +17,11 @@ interface ReplayPlatform<
      * @param replaySystem The replay system in use.
      * @param replay The replay to play.
      */
-    fun <Platform : ReplayPlatform<Viewer, World, Entity>,
-            System : ReplaySystem<Viewer, World, Entity, Platform>> createReplayer(
+    fun <Platform : ReplayPlatform<World, Viewer, Entity>,
+            System : ReplaySystem<World, Viewer, Entity, Platform>> createReplayer(
         replaySystem: System,
         replay: Replay
-    ): Replayer<Viewer, World, Entity, Platform, System>
+    ): Replayer<World, Viewer, Entity, Platform, System>
 
     /**
      * Schedule a repeating task.

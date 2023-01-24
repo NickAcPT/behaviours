@@ -19,11 +19,11 @@ import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
  * @param System The replay system being used.
  */
 interface Replayer<
-        Viewer : ReplayViewer,
         World : ReplayWorld,
+        Viewer : ReplayViewer<World>,
         Entity : ReplayEntity,
-        Platform : ReplayPlatform<Viewer, World, Entity>,
-        System : ReplaySystem<Viewer, World, Entity, Platform>> {
+        Platform : ReplayPlatform<World, Viewer, Entity>,
+        System : ReplaySystem<World, Viewer, Entity, Platform>> {
 
     /**
      * Prepare the replay session for the given replay, replay session, and replay viewers
@@ -35,7 +35,7 @@ interface Replayer<
      */
     fun prepareReplaySession(
         replay: Replay,
-        replaySession: ReplaySession<Viewer, World, Entity, Platform, System>,
+        replaySession: ReplaySession<World, Viewer, Entity, Platform, System>,
         replayViewers: List<Viewer>
     ): World
 
@@ -46,9 +46,9 @@ interface Replayer<
      * @param replaySession The replay session to create the Entity manager for.
      * @return an Entity manager for the given replay system and session.
      */
-    fun <Platform : ReplayPlatform<Viewer, World, Entity>,
-            System : ReplaySystem<Viewer, World, Entity, Platform>,
-            Session : ReplaySession<Viewer, World, Entity, Platform, System>> createEntityManager(
+    fun <Platform : ReplayPlatform<World, Viewer, Entity>,
+            System : ReplaySystem<World, Viewer, Entity, Platform>,
+            Session : ReplaySession<World, Viewer, Entity, Platform, System>> createEntityManager(
         replaySystem: System,
         replaySession: Session
     ): EntityManager<Entity>
@@ -63,7 +63,7 @@ interface Replayer<
      * @param viewer The viewer for which to update the state.
      */
     fun updateReplaySessionStateForViewer(
-        replaySession: ReplaySession<Viewer, World, Entity, Platform, System>,
+        replaySession: ReplaySession<World, Viewer, Entity, Platform, System>,
         viewer: Viewer,
     )
 
@@ -74,7 +74,7 @@ interface Replayer<
      * @param viewer The viewer for which to update the controls.
      */
     fun updateReplaySessionViewerControls(
-        replaySession: ReplaySession<Viewer, World, Entity, Platform, System>,
+        replaySession: ReplaySession<World, Viewer, Entity, Platform, System>,
         viewer: Viewer,
     )
 
