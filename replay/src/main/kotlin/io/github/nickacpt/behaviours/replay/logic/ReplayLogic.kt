@@ -54,6 +54,12 @@ class ReplayLogic<World : ReplayWorld,
         }
     }
 
+    fun tickRecorders() {
+        system.replayRecorders.forEach { recorder ->
+            recorder.tick()
+        }
+    }
+
     fun tickSessions() {
         system.replaySessions.forEach { session ->
             @Suppress("UNCHECKED_CAST") // We know that the session is of the correct type, it's also erased anyway so not like it matters

@@ -1,5 +1,6 @@
 package io.github.nickacpt.behaviours.replay.model
 
+import io.github.nickacpt.behaviours.replay.abstractions.ReplayEntity
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayEntityData
 import io.github.nickacpt.behaviours.replay.model.standard.location.RecordableLocation
 
@@ -14,4 +15,6 @@ data class RecordedReplayEntity(
     val id: Int,
     val firstPosition: RecordableLocation,
     val data: ReplayEntityData
-)
+) {
+    constructor(entity: ReplayEntity) : this(entity.id, entity.location, entity.data)
+}

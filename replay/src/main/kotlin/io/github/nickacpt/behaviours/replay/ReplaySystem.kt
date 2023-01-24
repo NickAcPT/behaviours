@@ -8,6 +8,8 @@ import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataProvide
 import io.github.nickacpt.behaviours.replay.model.metadata.def.DefaultMetadataKeys
 import io.github.nickacpt.behaviours.replay.model.metadata.def.DefaultMetadataProvider
 import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
+import io.github.nickacpt.behaviours.replay.record.RecordingConfiguration
+import io.github.nickacpt.behaviours.replay.record.ReplayRecorder
 import net.kyori.adventure.key.Key
 
 /**
@@ -34,11 +36,17 @@ class ReplaySystem<
     private val replaySessionsList =
         mutableListOf<ReplaySession<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>>>()
 
+    private val replayRecordersList =
+        mutableListOf<ReplayRecorder<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>>>()
+
     val logic =
         ReplayLogic(this, platform)
 
     val replaySessions: List<ReplaySession<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>>>
         get() = replaySessionsList
+
+    val replayRecorders: List<ReplayRecorder<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>>>
+        get() = replayRecordersList
 
     var defaultMetadataKeys: DefaultMetadataKeys? = null
         private set
@@ -102,7 +110,25 @@ class ReplaySystem<
         }
     }
 
+    fun createReplayRecorder(
+        entities: List<Entity>,
+        configuration: RecordingConfiguration = RecordingConfiguration()
+    ): ReplayRecorder<World, Viewer, Entity, Platform,
+            ReplaySystem<World, Viewer, Entity, Platform>> {
+        return ReplayRecorder(this, entities, configuration).also {
+            replayRecordersList.add(it)
+        }
+    }
+
+    internal fun provideReplayMetadata(replay: Replay): Map<ReplayMetadataKey<out Any>, Any> {
+        @Suppress("UNCHECKED_CAST")
+        return registeredMetadataKeys.values.mapNotNull { key ->
+            key.provider?.provideMetadata(replay)?.let { key to it }
+        }.toMap() as? Map<ReplayMetadataKey<out Any>, Any> ?: emptyMap()
+    }
+
     fun initialize() {
+        logic.platform.registerRepeatingTask(1, logic::tickRecorders)
         logic.platform.registerRepeatingTask(5, logic::updateSessionStatusForViewers)
     }
 }

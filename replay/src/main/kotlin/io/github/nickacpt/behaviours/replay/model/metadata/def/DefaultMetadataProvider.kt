@@ -10,6 +10,7 @@ internal object DefaultMetadataProvider {
     internal fun ReplaySystem<*, *, *, *>.registerDefaultMetadata(): DefaultMetadataKeys {
         return DefaultMetadataKeys(
             registerMetadataKey(Key.key(METADATA_KEY, REC_INFO_VALUE), ReplayRecordingInformation),
+            registerMetadataKey(Key.key(METADATA_KEY, "debug_information"), DebugReplayInformation)
         )
     }
 }
