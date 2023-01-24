@@ -35,6 +35,15 @@ class ReplaySession<
     settings: ReplaySessionSettings = ReplaySessionSettings()
 ) : ForwardingAudience {
 
+    private val stateListeners = mutableListOf<(ReplaySessionState, ReplaySessionState) -> Unit>()
+
+    internal fun addStateListener(listener: (ReplaySessionState, ReplaySessionState) -> Unit) {
+        stateListeners.add(listener)
+    }
+
+    val host: Viewer?
+        get() = viewers.firstOrNull()
+
     lateinit var world: World
         private set
 
@@ -51,10 +60,14 @@ class ReplaySession<
      * The current tick of the replay playback.
      */
     var currentTick: ULong = 0u
-        private set
+        internal set
 
     var state = ReplaySessionState.LOADING
-        private set
+        internal set(value) {
+            val oldState = field
+            field = value
+            stateListeners.forEach { it(oldState, value) }
+        }
 
     override fun audiences(): Iterable<Audience> {
         return viewers

@@ -12,6 +12,11 @@ import io.github.nickacpt.behaviours.replay.model.standard.location.RecordableLo
 interface EntityManager<Entity : ReplayEntity> {
 
     /**
+     * The map of entities that are currently spawned in the world.
+     */
+    val entityMap: MutableMap<Int, Entity>
+
+    /**
      * Spawns an entity at a given location
      *
      * @param entity The entity to spawn.

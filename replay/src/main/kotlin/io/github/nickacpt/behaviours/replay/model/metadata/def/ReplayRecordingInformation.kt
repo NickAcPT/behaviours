@@ -2,7 +2,9 @@ package io.github.nickacpt.behaviours.replay.model.metadata.def
 
 import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataProvider
+import io.github.nickacpt.behaviours.replay.utils.displayTicks
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.JoinConfiguration
 import net.kyori.adventure.text.format.NamedTextColor
 import java.time.Instant
 import java.time.ZoneId
@@ -20,7 +22,11 @@ data class ReplayRecordingInformation(
         )
 
         override fun provideDisplay(replay: Replay, metadata: ReplayRecordingInformation): Component {
-            return Component.text(formatter.format(metadata.recordingStarted), NamedTextColor.GRAY)
+            return Component.join(
+                JoinConfiguration.newlines(),
+                Component.text(formatter.format(metadata.recordingStarted)),
+                Component.text("Duration: ").append(displayTicks(replay.duration))
+            ).color(NamedTextColor.GRAY)
         }
     }
 }

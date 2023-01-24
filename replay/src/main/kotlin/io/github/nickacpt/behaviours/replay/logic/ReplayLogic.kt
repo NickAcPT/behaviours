@@ -18,11 +18,13 @@ class ReplayLogic<World : ReplayWorld,
         System : ReplaySystem<World, Viewer, Entity, Platform>,
         Session : ReplaySession<World, Viewer, Entity, Platform, System>,
         ReplayerType : Replayer<World, Viewer, Entity, Platform, System>
-
         >(
     val system: System,
     val platform: Platform
 ) {
+
+    private val sessionLogic =
+        SessionLogic(system, platform)
 
     fun onReplaySessionStart(
         session: ReplaySession<World, Viewer, Entity, Platform, System>,
@@ -35,15 +37,19 @@ class ReplayLogic<World : ReplayWorld,
         // Debug Only
         session.sendMessage(Component.text("Replay", NamedTextColor.GOLD).hoverEvent(replay.computeDisplayLore()))
 
-        replayViewers.forEach { viewer ->
-            replayer.updateReplaySessionViewerControls(session, viewer)
-        }
+        @Suppress("UNCHECKED_CAST") // We know that the session is of the correct type, it's also erased anyway so not like it matters
+        updateSessionHostControls(session as Session, replayer)
 
-        session.entityManager.also {
-            replay.entities.forEach { entity ->
-                it.spawnEntity(entity, entity.firstPosition)
-            }
+        session.addStateListener { _, _ ->
+            updateSessionHostControls(session, replayer)
         }
+    }
+
+    private fun updateSessionHostControls(
+        session: Session,
+        replayer: ReplayerType
+    ) {
+        session.host?.let { replayer.updateReplaySessionViewerControls(session, it) }
     }
 
     internal fun updateSessionStatusForViewers() {
@@ -63,7 +69,7 @@ class ReplayLogic<World : ReplayWorld,
     fun tickSessions() {
         system.replaySessions.forEach { session ->
             @Suppress("UNCHECKED_CAST") // We know that the session is of the correct type, it's also erased anyway so not like it matters
-            (session as Session).tickSession()
+            with (sessionLogic) { (session as Session).tick() }
         }
     }
 
@@ -73,10 +79,6 @@ class ReplayLogic<World : ReplayWorld,
         controlItem: ReplayControlItemType,
         isRightClick: Boolean
     ) {
-
-    }
-
-    fun Session.tickSession() {
-
+        sessionLogic.handleControlItemInteraction(session, viewer, controlItem, isRightClick)
     }
 }

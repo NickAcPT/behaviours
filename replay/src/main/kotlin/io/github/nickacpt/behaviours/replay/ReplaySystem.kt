@@ -129,6 +129,7 @@ class ReplaySystem<
 
     fun initialize() {
         logic.platform.registerRepeatingTask(1, logic::tickRecorders)
+        logic.platform.registerRepeatingTask(1, logic::tickSessions)
         logic.platform.registerRepeatingTask(5, logic::updateSessionStatusForViewers)
     }
 }
