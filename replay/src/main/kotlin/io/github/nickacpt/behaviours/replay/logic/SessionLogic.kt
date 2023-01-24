@@ -6,6 +6,7 @@ import io.github.nickacpt.behaviours.replay.abstractions.ReplayPlatform
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayViewer
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayWorld
 import io.github.nickacpt.behaviours.replay.model.Recordable
+import io.github.nickacpt.behaviours.replay.model.standard.entity.HasEntity
 import io.github.nickacpt.behaviours.replay.playback.Replayer
 import io.github.nickacpt.behaviours.replay.playback.recordables.RecordablePlayer
 import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
@@ -57,8 +58,22 @@ class SessionLogic<World : ReplayWorld,
     }
 
     private fun Session.doSessionTick(tick: ULong = currentTick) {
+        val recordablesToPlay = replay.recordables[tick]?.toMutableList()
 
-        replay.recordables[tick]?.forEach { recordable ->
+        // If we are at the beginning of the replay, we need to also provide the default recordables
+        if (tick == 0uL) {
+            recordablesToPlay?.addAll(0, replay.entities.flatMap { entity ->
+                system.provideRecordableDefaultProviders().map {
+                    it.getDefault().apply {
+                        if (this is HasEntity) {
+                            this.entity = entity
+                        }
+                    }
+                }
+            })
+        }
+
+        recordablesToPlay?.forEach { recordable ->
             @Suppress("UNCHECKED_CAST") val player: RecordablePlayer<World, Viewer, Entity, Platform, System, Session, in Recordable> =
                 system.provideRecordablePlayer(recordable.javaClass) as? RecordablePlayer<World, Viewer, Entity, Platform, System, Session, in Recordable>
                     ?: return@forEach

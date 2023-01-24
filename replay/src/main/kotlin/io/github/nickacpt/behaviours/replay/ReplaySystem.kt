@@ -8,6 +8,7 @@ import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataKey
 import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataProvider
 import io.github.nickacpt.behaviours.replay.model.metadata.def.DefaultMetadataKeys
 import io.github.nickacpt.behaviours.replay.model.metadata.def.DefaultMetadataProvider
+import io.github.nickacpt.behaviours.replay.model.standard.DefaultRecordableProvider
 import io.github.nickacpt.behaviours.replay.playback.recordables.RecordablePlayer
 import io.github.nickacpt.behaviours.replay.playback.recordables.standard.StandardRecordPlayerProvider
 import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
@@ -35,6 +36,9 @@ class ReplaySystem<
     provideDefaultMetadata: Boolean = true
 ) {
     private val registeredMetadataKeys: MutableMap<Key, ReplayMetadataKey<*>> = mutableMapOf()
+
+    private val registeredRecordableDefaultProvider: MutableMap<Class<out Recordable>, DefaultRecordableProvider<out Recordable>> =
+        mutableMapOf()
 
     private val registeredRecordablePlayers: MutableMap<Class<out Recordable>,
             RecordablePlayer<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>, ReplaySession<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>>, out Recordable>> =
@@ -160,6 +164,20 @@ class ReplaySystem<
         return registeredMetadataKeys.values.mapNotNull { key ->
             key.provider?.provideMetadata(replay)?.let { key to it }
         }.toMap() as? Map<ReplayMetadataKey<out Any>, Any> ?: emptyMap()
+    }
+
+    inline fun <reified R : Recordable> registerRecordableDefaultProvider(provider: DefaultRecordableProvider<R>) =
+        registerRecordableDefaultProvider(R::class.java, provider)
+
+    fun registerRecordableDefaultProvider(
+        recordableClass: Class<out Recordable>,
+        defaultProvider: DefaultRecordableProvider<out Recordable>
+    ) {
+        registeredRecordableDefaultProvider[recordableClass] = defaultProvider
+    }
+
+    internal fun provideRecordableDefaultProviders(): MutableCollection<DefaultRecordableProvider<out Recordable>> {
+        return registeredRecordableDefaultProvider.values
     }
 
 
