@@ -9,6 +9,6 @@ import kotlin.time.Duration.Companion.seconds
  * @param currentStepSize The current step size. ( default is 1 second )
  */
 data class ReplaySessionSettings(
-    val currentPlaybackSpeed: Double = 1.0,
+    var currentPlaybackSpeed: Double = 1.0,
     val currentStepSize: Duration = 1.seconds
 )

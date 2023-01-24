@@ -33,11 +33,20 @@ class SessionLogic<World : ReplayWorld,
         }
 
         if (state == ReplaySessionState.PLAYING) {
-            this.doSessionTick()
+            doSessionTick()
         }
 
         if (state == ReplaySessionState.PLAYING) {
-            currentTick++
+            currentFractionalTick += settings.currentPlaybackSpeed
+
+            if (currentFractionalTick >= 1.0) {
+                //TODO Make sure we handle all in-between ticks
+                while (currentFractionalTick >= 1.0) {
+                    currentFractionalTick--
+                    currentTick++
+                    doSessionTick()
+                }
+            }
 
             if (currentTick >= replay.duration) {
                 currentTick = replay.duration
@@ -46,8 +55,8 @@ class SessionLogic<World : ReplayWorld,
         }
     }
 
-    private fun Session.doSessionTick() {
-        replay.recordables[currentTick]?.forEach { recordable ->
+    private fun Session.doSessionTick(tick: ULong = currentTick) {
+        replay.recordables[tick]?.forEach { recordable ->
             // TODO: Abstract recordable playing
             if (recordable is TickRecordable) {
                 recordable.entityPositions.forEach { (id, pos) ->
@@ -69,7 +78,10 @@ class SessionLogic<World : ReplayWorld,
             ReplayControlItemType.STEP_BACKWARDS -> TODO()
             ReplayControlItemType.PAUSE -> ReplaySessionState.PAUSED
             ReplayControlItemType.RESTART -> {
+                // Reset the session to the beginning and tick it once
                 session.currentTick = 0u
+                session.doSessionTick()
+
                 ReplaySessionState.PAUSED
             }
             ReplayControlItemType.STEP_FORWARD -> TODO()

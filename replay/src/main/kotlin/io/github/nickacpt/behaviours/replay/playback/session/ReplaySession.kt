@@ -56,14 +56,15 @@ class ReplaySession<
         this.world = world
     }
 
+    internal var currentFractionalTick: Double = 0.0
+
     /**
      * The current tick of the replay playback.
      */
     var currentTick: ULong = 0u
-        internal set
 
     var state = ReplaySessionState.LOADING
-        internal set(value) {
+        set(value) {
             val oldState = field
             field = value
             stateListeners.forEach { it(oldState, value) }

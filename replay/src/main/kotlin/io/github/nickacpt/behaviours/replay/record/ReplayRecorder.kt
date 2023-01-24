@@ -27,7 +27,9 @@ class ReplayRecorder<
     var replay: Replay? = null
         private set
 
-    private var recording = false
+    var recording = false
+        private set
+
     private var tickCount: ULong? = null
     private val recordables = mutableMapOf<ULong, List<Recordable>>()
     private val currentRecordables = mutableListOf<Recordable>()
