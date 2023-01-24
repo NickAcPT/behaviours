@@ -10,5 +10,5 @@ import io.github.nickacpt.behaviours.replay.playback.Replayer
  * All recordables implementing this interface should be implemented in a way that they can be
  * replayed by all platforms with a [Replayer].
  */
-abstract class StandardRecordable : Recordable()
+abstract class StandardRecordable : Recordable
 

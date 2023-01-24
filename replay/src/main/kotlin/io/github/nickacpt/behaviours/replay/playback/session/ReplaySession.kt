@@ -50,7 +50,7 @@ class ReplaySession<
     /**
      * The current tick of the replay playback.
      */
-    var currentTick = 0L
+    var currentTick: ULong = 0u
         private set
 
     var state = ReplaySessionState.LOADING

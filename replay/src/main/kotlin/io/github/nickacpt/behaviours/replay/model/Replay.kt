@@ -5,7 +5,6 @@ import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataProvide
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.JoinConfiguration
 import java.util.*
-import kotlin.time.Duration
 
 /**
  * A Replay.
@@ -17,9 +16,9 @@ data class Replay(
     val id: UUID,
     val entities: List<RecordedReplayEntity>,
     val metadata: MutableMap<ReplayMetadataKey<out Any>, out Any>,
-    val recordables: List<Recordable>
+    val recordables: Map<ULong, List<Recordable>>
 ) {
-    val duration: Duration by lazy { recordables.lastOrNull()?.timestamp ?: Duration.ZERO }
+    val duration: ULong by lazy { recordables.keys.max() }
 
     operator fun <T> get(key: ReplayMetadataKey<in T>): T? {
         // This cast is not useless, it's required to make the compiler happy

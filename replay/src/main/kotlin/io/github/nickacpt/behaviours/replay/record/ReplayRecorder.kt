@@ -11,10 +11,7 @@ import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataKey
 import io.github.nickacpt.behaviours.replay.model.standard.EndingRecordable
 import io.github.nickacpt.behaviours.replay.model.standard.TickRecordable
-import java.time.Duration
-import java.time.Instant
 import java.util.*
-import kotlin.time.toKotlinDuration
 
 class ReplayRecorder<
         World : ReplayWorld,
@@ -29,9 +26,11 @@ class ReplayRecorder<
 
     var replay: Replay? = null
         private set
+
     private var recording = false
-    private var recordingStartTime: Instant? = null
-    private val recordables = mutableListOf<Recordable>()
+    private var tickCount: ULong? = null
+    private val recordables = mutableMapOf<ULong, List<Recordable>>()
+    private val currentRecordables = mutableListOf<Recordable>()
 
     init {
         if (configuration.autoStart) {
@@ -41,22 +40,26 @@ class ReplayRecorder<
 
     fun tick() {
         if (!recording) return
-
         addRecordable(TickRecordable(entities.associate { it.id to it.location }))
+
+        if (currentRecordables.isNotEmpty()) {
+            recordables[tickCount!!] = currentRecordables.toList()
+            currentRecordables.clear()
+        }
+        tickCount = tickCount?.plus(1u)
     }
 
     fun addRecordable(recordable: Recordable) {
         if (!recording) return
 
-        recordable.timestamp = Duration.between(recordingStartTime, Instant.now()).toKotlinDuration()
-        recordables.add(recordable)
+        currentRecordables.add(recordable)
     }
 
     fun startRecording(): Boolean {
         if (recording) return false
 
         recording = true
-        recordingStartTime = Instant.now()
+        tickCount = 0u
         replay = initializeReplay()
 
         return true
@@ -65,10 +68,13 @@ class ReplayRecorder<
     fun stopRecording(): Boolean {
         if (!recording) return false
 
-        addRecordable(EndingRecordable())
+        addRecordable(EndingRecordable)
+
+        // Tick one last time to add the ending recordable
+        tick()
 
         recording = false
-        recordingStartTime = null
+        tickCount = null
 
         return true
     }

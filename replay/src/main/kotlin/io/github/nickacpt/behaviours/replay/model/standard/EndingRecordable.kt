@@ -1,3 +1,3 @@
 package io.github.nickacpt.behaviours.replay.model.standard
 
-class EndingRecordable : StandardRecordable()
+object EndingRecordable : StandardRecordable()

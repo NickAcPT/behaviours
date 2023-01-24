@@ -14,7 +14,7 @@ object DebugReplayInformation : ReplayMetadataProvider<Unit> {
         return Component.join(
             JoinConfiguration.newlines(),
             listOf(Component.text("Debug information:", NamedTextColor.GRAY),
-                *replay.recordables.map { it.javaClass.simpleName }.groupBy { it }
+                *replay.recordables.flatMap { it.value }.map { it.javaClass.simpleName }.groupBy { it }
                     .map { (k, v) -> Component.text("$k: ${v.size}", NamedTextColor.GOLD) }.toTypedArray()
             )
         )
