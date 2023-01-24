@@ -2,11 +2,14 @@ package io.github.nickacpt.behaviours.replay
 
 import io.github.nickacpt.behaviours.replay.abstractions.*
 import io.github.nickacpt.behaviours.replay.logic.ReplayLogic
+import io.github.nickacpt.behaviours.replay.model.Recordable
 import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataKey
 import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataProvider
 import io.github.nickacpt.behaviours.replay.model.metadata.def.DefaultMetadataKeys
 import io.github.nickacpt.behaviours.replay.model.metadata.def.DefaultMetadataProvider
+import io.github.nickacpt.behaviours.replay.playback.recordables.RecordablePlayer
+import io.github.nickacpt.behaviours.replay.playback.recordables.standard.StandardRecordPlayerProvider
 import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
 import io.github.nickacpt.behaviours.replay.record.RecordingConfiguration
 import io.github.nickacpt.behaviours.replay.record.ReplayRecorder
@@ -33,6 +36,10 @@ class ReplaySystem<
 ) {
     private val registeredMetadataKeys: MutableMap<Key, ReplayMetadataKey<*>> = mutableMapOf()
 
+    private val registeredRecordablePlayers: MutableMap<Class<out Recordable>,
+            RecordablePlayer<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>, ReplaySession<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>>, out Recordable>> =
+        mutableMapOf()
+
     private val replaySessionsList =
         mutableListOf<ReplaySession<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>>>()
 
@@ -56,6 +63,10 @@ class ReplaySystem<
             with(DefaultMetadataProvider) {
                 defaultMetadataKeys = registerDefaultMetadata()
             }
+        }
+
+        with(StandardRecordPlayerProvider) {
+            registerStandardRecordablePlayers()
         }
     }
 
@@ -120,12 +131,36 @@ class ReplaySystem<
         }
     }
 
+    fun registerRecordablePlayer(
+        recordableClass: Class<out Recordable>,
+        recordablePlayer: RecordablePlayer<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>, ReplaySession<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>>, out Recordable>
+    ) {
+        registeredRecordablePlayers[recordableClass] = recordablePlayer
+    }
+
+    inline fun <reified R : Recordable,
+            Player : RecordablePlayer<World, Viewer, Entity, Platform,
+                    ReplaySystem<World, Viewer, Entity, Platform>, ReplaySession<World, Viewer, Entity, Platform,
+                    ReplaySystem<World, Viewer, Entity, Platform>>, in R>
+            > registerRecordablePlayer(
+        recordablePlayer: Player
+    ) {
+        registerRecordablePlayer(R::class.java, recordablePlayer)
+    }
+
+    internal fun provideRecordablePlayer(
+        clazz: Class<out Recordable>
+    ): RecordablePlayer<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>, ReplaySession<World, Viewer, Entity, Platform, ReplaySystem<World, Viewer, Entity, Platform>>, out Recordable>? {
+        return registeredRecordablePlayers[clazz]
+    }
+
     internal fun provideReplayMetadata(replay: Replay): Map<ReplayMetadataKey<out Any>, Any> {
         @Suppress("UNCHECKED_CAST")
         return registeredMetadataKeys.values.mapNotNull { key ->
             key.provider?.provideMetadata(replay)?.let { key to it }
         }.toMap() as? Map<ReplayMetadataKey<out Any>, Any> ?: emptyMap()
     }
+
 
     fun initialize() {
         logic.platform.registerRepeatingTask(1, logic::tickRecorders)

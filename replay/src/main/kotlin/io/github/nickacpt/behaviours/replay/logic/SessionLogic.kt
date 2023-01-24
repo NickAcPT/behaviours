@@ -5,8 +5,9 @@ import io.github.nickacpt.behaviours.replay.abstractions.ReplayEntity
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayPlatform
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayViewer
 import io.github.nickacpt.behaviours.replay.abstractions.ReplayWorld
-import io.github.nickacpt.behaviours.replay.model.standard.TickRecordable
+import io.github.nickacpt.behaviours.replay.model.Recordable
 import io.github.nickacpt.behaviours.replay.playback.Replayer
+import io.github.nickacpt.behaviours.replay.playback.recordables.RecordablePlayer
 import io.github.nickacpt.behaviours.replay.playback.session.ReplaySession
 import io.github.nickacpt.behaviours.replay.playback.session.ReplaySessionState
 
@@ -56,12 +57,14 @@ class SessionLogic<World : ReplayWorld,
     }
 
     private fun Session.doSessionTick(tick: ULong = currentTick) {
+
         replay.recordables[tick]?.forEach { recordable ->
-            // TODO: Abstract recordable playing
-            if (recordable is TickRecordable) {
-                recordable.entityPositions.forEach { (id, pos) ->
-                    entityManager.entityMap[id]?.let { entityManager.updateEntityPosition(it, pos) }
-                }
+            @Suppress("UNCHECKED_CAST") val player: RecordablePlayer<World, Viewer, Entity, Platform, System, Session, in Recordable> =
+                system.provideRecordablePlayer(recordable.javaClass) as? RecordablePlayer<World, Viewer, Entity, Platform, System, Session, in Recordable>
+                    ?: return@forEach
+
+            with(player) {
+                this@doSessionTick.play(tick, recordable)
             }
         }
     }
@@ -84,6 +87,7 @@ class SessionLogic<World : ReplayWorld,
 
                 ReplaySessionState.PAUSED
             }
+
             ReplayControlItemType.STEP_FORWARD -> TODO()
             ReplayControlItemType.INCREASE_SPEED -> TODO()
         }
