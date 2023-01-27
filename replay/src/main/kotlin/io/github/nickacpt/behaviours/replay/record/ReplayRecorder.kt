@@ -10,8 +10,10 @@ import io.github.nickacpt.behaviours.replay.model.RecordedReplayEntity
 import io.github.nickacpt.behaviours.replay.model.Replay
 import io.github.nickacpt.behaviours.replay.model.metadata.ReplayMetadataKey
 import io.github.nickacpt.behaviours.replay.model.standard.EndingRecordable
+import io.github.nickacpt.behaviours.replay.model.standard.MessageRecordable
 import io.github.nickacpt.behaviours.replay.model.standard.TickRecordable
 import io.github.nickacpt.behaviours.replay.model.standard.entity.HasEntity
+import net.kyori.adventure.text.Component
 import java.util.*
 
 open class ReplayRecorder<
@@ -61,6 +63,10 @@ open class ReplayRecorder<
     fun <R> addEntityRecordable(recordable: R, entity: Entity) where R : Recordable, R : HasEntity {
         recordable.entity = replay?.entities?.firstOrNull { it.id == entity.id } ?: return
         addRecordable(recordable)
+    }
+
+    fun addMessage(message: Component) {
+        addRecordable(MessageRecordable(message))
     }
 
     open fun startRecording(): Boolean {

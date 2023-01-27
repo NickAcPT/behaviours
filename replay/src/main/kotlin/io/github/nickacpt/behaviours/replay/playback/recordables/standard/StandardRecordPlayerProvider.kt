@@ -14,6 +14,6 @@ object StandardRecordPlayerProvider {
             Platform : ReplayPlatform<World, Viewer, Entity>>
             ReplaySystem<World, Viewer, Entity, Platform>.registerStandardRecordablePlayers() {
         registerRecordablePlayer(TickRecordablePlayer())
+        registerRecordablePlayer(MessageRecordablePlayer())
     }
-
 }
